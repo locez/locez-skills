@@ -1,10 +1,10 @@
-# Gentoo Maintenance Skill Implementation Plan
+# Gentoo Maintenance Implementation Plan
 
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build the first usable open-source `gentoo-maintenance` skill in `~/locez-skills`, with a concise `SKILL.md`, focused reference files, staging templates, and validation rules aligned with the approved spec.
+**Goal:** Update the `gentoo-maintenance` skill so it discovers, asks for, and stages durable host and agent preferences using the approved `/etc/portage/gm-*.yaml` model.
 
-**Architecture:** The implementation is documentation-first. `SKILL.md` stays lean and acts as the workflow entrypoint, while detailed policy lives in `references/`. Reusable candidate file layouts live in `assets/tmp-layout/`, and validation focuses on discoverability, safety gates, and keeping the skill concise enough to load reliably.
+**Architecture:** The implementation stays documentation-first. `SKILL.md` remains the short entrypoint, while reference files define routing, schema, and safety behavior for the new two-file profile model. Template assets under `assets/tmp-layout/` provide reviewable staged candidates for both Portage rules and local profile updates.
 
 **Tech Stack:** Markdown, YAML, Git, local filesystem structure under `~/locez-skills`
 
@@ -15,96 +15,72 @@
 ### Repository Documentation
 
 - Existing: `/home/locez/locez-skills/docs/specs/2026-03-12-gentoo-maintenance-skill-design.md`
-- Create: `/home/locez/locez-skills/docs/plans/2026-03-12-gentoo-maintenance-implementation-plan.md`
+- Modify: `/home/locez/locez-skills/docs/plans/2026-03-12-gentoo-maintenance-implementation-plan.md`
 
 ### Skill Entry And Metadata
 
-- Create: `/home/locez/locez-skills/gentoo-maintenance/SKILL.md`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/agents/openai.yaml`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/SKILL.md`
+- Existing: `/home/locez/locez-skills/gentoo-maintenance/agents/openai.yaml`
 
 ### Reference Files
 
-- Create: `/home/locez/locez-skills/gentoo-maintenance/references/host-roles.md`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/references/task-types.md`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/references/portage-file-placement.md`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/references/decision-matrix.md`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/references/command-strategy.md`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/references/safety-gates.md`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/references/binpkg-policy.md`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/references/host-profile-schema.md`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/references/host-roles.md`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/references/task-types.md`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/references/portage-file-placement.md`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/references/decision-matrix.md`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/references/command-strategy.md`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/references/safety-gates.md`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/references/binpkg-policy.md`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/references/host-profile-schema.md`
+- Create: `/home/locez/locez-skills/gentoo-maintenance/references/agent-preferences-schema.md`
 
 ### Asset Templates
 
-- Create: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/review-summary.txt`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/package.accept_keywords.custom`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/package.accept_keywords.zz-autounmask`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/package.use.topic`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/package.mask.pins`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/review-summary.txt`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/package.accept_keywords.custom`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/package.accept_keywords.zz-autounmask`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/package.use.topic`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/package.mask.pins`
+- Create: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/gm-host-profile.yaml`
+- Create: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/gm-agent-preferences.yaml`
 
-## Chunk 1: Skill Skeleton And Entry Workflow
+## Chunk 1: Entry Workflow And Local Profile Model
 
-### Task 1: Create The Plan Path And Save This Plan
-
-**Files:**
-- Create: `/home/locez/locez-skills/docs/plans/2026-03-12-gentoo-maintenance-implementation-plan.md`
-
-- [ ] **Step 1: Create the plans directory**
-
-Run: `mkdir -p /home/locez/locez-skills/docs/plans`
-Expected: directory exists with no error output
-
-- [ ] **Step 2: Copy this plan into the repository**
-
-Run: `cp /tmp/2026-03-12-gentoo-maintenance-implementation-plan.md /home/locez/locez-skills/docs/plans/2026-03-12-gentoo-maintenance-implementation-plan.md`
-Expected: plan file exists in `docs/plans`
-
-- [ ] **Step 3: Verify the saved plan**
-
-Run: `sed -n '1,80p' /home/locez/locez-skills/docs/plans/2026-03-12-gentoo-maintenance-implementation-plan.md`
-Expected: header matches this plan
-
-### Task 2: Write The Core SKILL.md
+### Task 1: Rewrite The Core `SKILL.md`
 
 **Files:**
-- Create: `/home/locez/locez-skills/gentoo-maintenance/SKILL.md`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/SKILL.md`
 - Reference: `/home/locez/locez-skills/docs/specs/2026-03-12-gentoo-maintenance-skill-design.md`
 
-- [ ] **Step 1: Draft the frontmatter with strong trigger wording**
+- [ ] **Step 1: Open the approved spec and current skill together**
 
-Include:
-- `name: gentoo-maintenance`
-- `description: Use when ...`
+Run:
+```bash
+sed -n '1,260p' /home/locez/locez-skills/docs/specs/2026-03-12-gentoo-maintenance-skill-design.md
+sed -n '1,220p' /home/locez/locez-skills/gentoo-maintenance/SKILL.md
+```
+Expected: the spec mentions `/etc/portage/gm-host-profile.yaml` and `/etc/portage/gm-agent-preferences.yaml`, while the current skill still needs to be updated to match it
 
-The description should trigger on:
-- Portage conflicts
-- `@world` upgrades
-- `/etc/portage` cleanup
-- binpkg and VPS tradeoff decisions
-- ebuild and USE policy placement decisions
+- [ ] **Step 2: Rewrite the workflow entry so it loads local profile sources before heuristics**
 
-- [ ] **Step 2: Write the skill overview and hard safety rules**
+Add these requirements:
+- read `gm-agent-preferences.yaml` and `gm-host-profile.yaml` first
+- determine missing task-critical fields
+- ask one question at a time when a missing field materially affects the answer
+- allow read-only analysis to continue with temporary conclusions only
+- stage any durable profile update under `/tmp/gentoo-maintenance/`
 
-Include:
-- purpose of the skill
-- requirement to identify host role first
-- requirement to identify task type second
-- hard rule that only `/tmp` and read-only work may proceed without review
+- [ ] **Step 3: Update the quick-routing and safety language**
 
-- [ ] **Step 3: Write the core workflow**
+Ensure `SKILL.md` explicitly states:
+- machine-wide preferences belong in `gm-host-profile.yaml`
+- durable user workflow overrides belong in `gm-agent-preferences.yaml`
+- missing profile data is not permission to guess silently
+- writing either `gm-*.yaml` file is a reviewed system write
 
-Document this fixed flow:
-1. identify host role
-2. identify task type
-3. assign risk level
-4. gather only the needed evidence
-5. classify change category
-6. decide target file class
-7. generate `/tmp/gentoo-maintenance/` candidates if needed
-8. stop at review gate before any write
+- [ ] **Step 4: Link the new schema reference**
 
-- [ ] **Step 4: Link to reference files instead of embedding detail**
-
-Reference:
+Reference all required files:
 - `references/host-roles.md`
 - `references/task-types.md`
 - `references/portage-file-placement.md`
@@ -113,238 +89,261 @@ Reference:
 - `references/safety-gates.md`
 - `references/binpkg-policy.md`
 - `references/host-profile-schema.md`
+- `references/agent-preferences-schema.md`
 
-- [ ] **Step 5: Verify `SKILL.md` stays lean**
-
-Run: `wc -l /home/locez/locez-skills/gentoo-maintenance/SKILL.md`
-Expected: comfortably below 500 lines
-
-- [ ] **Step 6: Commit the skeleton and skill entrypoint**
-
-```bash
-git -C /home/locez/locez-skills add docs/plans/2026-03-12-gentoo-maintenance-implementation-plan.md gentoo-maintenance/SKILL.md
-git -C /home/locez/locez-skills commit -m "docs: add gentoo maintenance implementation plan and skill entrypoint"
-```
-
-## Chunk 2: Reference Set
-
-### Task 3: Write Host Role And Task Type References
-
-**Files:**
-- Create: `/home/locez/locez-skills/gentoo-maintenance/references/host-roles.md`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/references/task-types.md`
-
-- [ ] **Step 1: Write `host-roles.md`**
-
-Cover:
-- `desktop`, `vps`, `binpkg-builder`, `mixed`
-- role resolution priority
-- when heuristics are allowed
-- when to stop and ask
-
-- [ ] **Step 2: Write `task-types.md`**
-
-Cover:
-- all six task types
-- their goals
-- what evidence each task type should gather
-- when one task type should hand off to another
-
-- [ ] **Step 3: Verify both references are concise and not duplicative**
+- [ ] **Step 5: Verify the entrypoint stays concise**
 
 Run:
 ```bash
-sed -n '1,220p' /home/locez/locez-skills/gentoo-maintenance/references/host-roles.md
+wc -l /home/locez/locez-skills/gentoo-maintenance/SKILL.md
+```
+Expected: `SKILL.md` remains comfortably below 500 lines
+
+### Task 2: Define The Two Local Schema References
+
+**Files:**
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/references/host-profile-schema.md`
+- Create: `/home/locez/locez-skills/gentoo-maintenance/references/agent-preferences-schema.md`
+
+- [ ] **Step 1: Rewrite `host-profile-schema.md` around the approved system path**
+
+Document:
+- recommended path `/etc/portage/gm-host-profile.yaml`
+- common required fields
+- conditional fields such as `allow_non_core_feature_loss`
+- a small YAML example
+- guidance to keep the file strategic rather than package-level
+
+- [ ] **Step 2: Create `agent-preferences-schema.md` for durable user overrides**
+
+Document:
+- recommended path `/etc/portage/gm-agent-preferences.yaml`
+- override categories such as host treatment, workflow, and rules to follow
+- examples for “respect current layout” and “ask before trading feature completeness for binpkg convenience”
+- guidance on what should remain current-turn-only instead of being persisted
+
+- [ ] **Step 3: Run a schema consistency check**
+
+Run:
+```bash
+rg -n "gm-host-profile.yaml|gm-agent-preferences.yaml|prefer_binpkg_when_possible|allow_non_core_feature_loss|rules_to_follow" /home/locez/locez-skills/gentoo-maintenance
+```
+Expected: the two schema docs and `SKILL.md` use the same field names and file paths
+
+- [ ] **Step 4: Commit chunk 1**
+
+```bash
+git -C /home/locez/locez-skills add gentoo-maintenance/SKILL.md gentoo-maintenance/references/host-profile-schema.md gentoo-maintenance/references/agent-preferences-schema.md
+git -C /home/locez/locez-skills commit -m "docs: add gentoo maintenance local profile model"
+```
+
+## Chunk 2: Decision Routing And Safety Rules
+
+### Task 3: Update Role And Task Classification References
+
+**Files:**
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/references/host-roles.md`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/references/task-types.md`
+
+- [ ] **Step 1: Rewrite `host-roles.md` to include precedence and ambiguity handling**
+
+Cover:
+- explicit current-turn instruction
+- `gm-agent-preferences.yaml` override
+- `gm-host-profile.yaml`
+- heuristics as last resort
+- stop-and-ask behavior when missing fields still affect role choice
+
+- [ ] **Step 2: Update `task-types.md` to mention task-driven field requirements**
+
+For each task type, add:
+- what profile fields are commonly needed
+- when binpkg preference affects the recommendation
+- when layout preferences affect hygiene advice
+- when the task should continue read-only with temporary conclusions
+
+- [ ] **Step 3: Verify the boundaries between role and task docs**
+
+Run:
+```bash
+sed -n '1,240p' /home/locez/locez-skills/gentoo-maintenance/references/host-roles.md
 sed -n '1,260p' /home/locez/locez-skills/gentoo-maintenance/references/task-types.md
 ```
-Expected: responsibilities are distinct and non-overlapping
+Expected: `host-roles.md` focuses on precedence and ambiguity, while `task-types.md` focuses on evidence and field needs per task
 
-### Task 4: Write Placement And Decision References
-
-**Files:**
-- Create: `/home/locez/locez-skills/gentoo-maintenance/references/portage-file-placement.md`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/references/decision-matrix.md`
-
-- [ ] **Step 1: Write `portage-file-placement.md`**
-
-Cover:
-- `package.accept_keywords/custom`
-- `package.accept_keywords/zz-autounmask`
-- `package.use/<topic>`
-- `package.use/zz-autounmask`
-- `package.mask`
-- host profile
-- `/tmp` staging
-
-- [ ] **Step 2: Write `decision-matrix.md`**
-
-Map:
-- host role
-- task type
-- change category
-
-To:
-- target file class
-- preferred behavior
-- expected review posture
-
-- [ ] **Step 3: Add one short example per change category**
-
-Examples should show:
-- direct intent
-- dependency exception
-- topic policy
-- host policy
-- temporary fix
-
-- [ ] **Step 4: Commit the role, task, placement, and decision references**
-
-```bash
-git -C /home/locez/locez-skills add gentoo-maintenance/references/host-roles.md gentoo-maintenance/references/task-types.md gentoo-maintenance/references/portage-file-placement.md gentoo-maintenance/references/decision-matrix.md
-git -C /home/locez/locez-skills commit -m "docs: add gentoo maintenance role and decision references"
-```
-
-## Chunk 3: Risk, Safety, Binpkg, And Profile Policy
-
-### Task 5: Write Command, Safety, Binpkg, And Host Profile References
+### Task 4: Update Placement, Decision, Safety, And Binpkg References
 
 **Files:**
-- Create: `/home/locez/locez-skills/gentoo-maintenance/references/command-strategy.md`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/references/safety-gates.md`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/references/binpkg-policy.md`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/references/host-profile-schema.md`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/references/portage-file-placement.md`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/references/decision-matrix.md`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/references/safety-gates.md`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/references/binpkg-policy.md`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/references/command-strategy.md`
 
-- [ ] **Step 1: Write `command-strategy.md`**
+- [ ] **Step 1: Update `portage-file-placement.md` for the two-file local model**
 
-Cover:
-- risk levels `low`, `medium`, `high`, `critical`
-- Level 1 to Level 4 command strength
-- when `--complete-graph=y` is default
-- when `--autounmask-backtrack=y` is justified
+Make sure it says:
+- `gm-host-profile.yaml` is for machine-level strategy
+- `gm-agent-preferences.yaml` is for durable workflow overrides
+- neither file is a package-rule dumping ground
+- staged profile updates belong under `/tmp/gentoo-maintenance/`
 
-- [ ] **Step 2: Write `safety-gates.md`**
+- [ ] **Step 2: Update `decision-matrix.md` to include profile-sensitive recommendation style**
 
-Cover:
-- what counts as a write
-- what actions require stopping
-- what conditions require reduced automation
-- requirement that auto mode cannot bypass the review gate
+Add language showing that:
+- `gm-agent-preferences.yaml` can change recommendation style without changing package placement
+- `gm-host-profile.yaml` can change strategy selection such as binpkg preference and acceptable feature trimming
+- temporary conclusions must be marked when critical fields are missing
 
-- [ ] **Step 3: Write `binpkg-policy.md`**
+- [ ] **Step 3: Update `safety-gates.md` and `command-strategy.md`**
 
-Cover:
-- VPS and builder feature-trimming policy
-- preference order: USE strategy, package strategy, then patching
-- preserving core function while allowing non-core feature loss
+Document:
+- writes to `gm-*.yaml` files are reviewed system writes
+- read-only analysis may continue with incomplete profile data
+- final recommendations must stop short when missing fields still affect execution
+- `--complete-graph=y` and `--autounmask-backtrack=y` guidance remains unchanged unless profile-sensitive strategy calls for additional caution
 
-- [ ] **Step 4: Write `host-profile-schema.md`**
+- [ ] **Step 4: Update `binpkg-policy.md`**
 
-Cover:
-- recommended local path
-- field meanings
-- small example schema
-- warning against duplicating `/etc/portage`
+Document:
+- `prefer_binpkg_when_possible`
+- `allow_non_core_feature_loss`
+- the rule that binpkg tradeoffs should be asked about when absent instead of guessed
 
-- [ ] **Step 5: Verify cross-reference consistency**
+- [ ] **Step 5: Run cross-reference checks for old and new model terms**
 
 Run:
 ```bash
-rg -n "complete-graph|autounmask-backtrack|review gate|host profile|non-core feature" /home/locez/locez-skills/gentoo-maintenance
+rg -n "~/.config/locez-skills|gentoo-host-profile|gm-host-profile.yaml|gm-agent-preferences.yaml|temporary_assumptions|final_decision_blocked_by_profile" /home/locez/locez-skills/gentoo-maintenance /home/locez/locez-skills/docs/specs
 ```
-Expected: terms appear in the right files with consistent wording
+Expected: no active documentation still routes to the old `~/.config/locez-skills` path, and the new `gm-*` terms appear where routing and safety are defined
 
-- [ ] **Step 6: Commit the policy references**
+- [ ] **Step 6: Commit chunk 2**
 
 ```bash
-git -C /home/locez/locez-skills add gentoo-maintenance/references/command-strategy.md gentoo-maintenance/references/safety-gates.md gentoo-maintenance/references/binpkg-policy.md gentoo-maintenance/references/host-profile-schema.md
-git -C /home/locez/locez-skills commit -m "docs: add gentoo maintenance policy references"
+git -C /home/locez/locez-skills add gentoo-maintenance/references/host-roles.md gentoo-maintenance/references/task-types.md gentoo-maintenance/references/portage-file-placement.md gentoo-maintenance/references/decision-matrix.md gentoo-maintenance/references/safety-gates.md gentoo-maintenance/references/binpkg-policy.md gentoo-maintenance/references/command-strategy.md
+git -C /home/locez/locez-skills commit -m "docs: refine gentoo maintenance decision routing"
 ```
 
-## Chunk 4: Assets, Metadata, And Validation
+## Chunk 3: Templates, Metadata, And Validation
 
-### Task 6: Create Template Assets For `/tmp` Candidate Output
+### Task 5: Add Staged Templates For Local Profile Updates
 
 **Files:**
-- Create: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/review-summary.txt`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/package.accept_keywords.custom`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/package.accept_keywords.zz-autounmask`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/package.use.topic`
-- Create: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/package.mask.pins`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/review-summary.txt`
+- Create: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/gm-host-profile.yaml`
+- Create: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/gm-agent-preferences.yaml`
 
-- [ ] **Step 1: Write `review-summary.txt` template**
+- [ ] **Step 1: Expand `review-summary.txt` for profile-sensitive runs**
 
 Include placeholders for:
-- context
-- findings
-- decisions
-- copy targets
-- merge mode
+- loaded profile sources
+- missing profile fields
+- temporary assumptions
+- whether `final_decision_blocked_by_profile` is true
+- copy target and merge mode for any `gm-*.yaml` candidate
 
-- [ ] **Step 2: Write the keyword and USE templates**
+- [ ] **Step 2: Create `gm-host-profile.yaml` staged example**
 
-Include short placeholder comments demonstrating:
-- direct intent layout
-- dependency provenance comments
-- topic file structure
-- mask note format
+Include placeholder keys for:
+- `role`
+- `prefer_binpkg_when_possible`
+- `prefer_tmp_candidates`
+- `require_manual_review_for_writes`
+- `allow_non_core_feature_loss`
+- `optimize_for`
+- `high_risk_areas`
+- `notes`
 
-- [ ] **Step 3: Verify templates are clearly examples, not live policy**
+- [ ] **Step 3: Create `gm-agent-preferences.yaml` staged example**
 
-Run: `sed -n '1,200p' /home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/*`
-Expected: placeholder content is generic and open-source safe
+Include placeholder keys for:
+- `prefer_question_when_profile_incomplete`
+- `allow_readonly_analysis_without_full_profile`
+- `host_overrides`
+- `workflow`
+- `rules_to_follow`
 
-### Task 7: Create UI Metadata And Validate The Skill
+- [ ] **Step 4: Verify the new templates are obviously examples**
+
+Run:
+```bash
+sed -n '1,220p' /home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/review-summary.txt
+sed -n '1,220p' /home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/gm-host-profile.yaml
+sed -n '1,220p' /home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/gm-agent-preferences.yaml
+```
+Expected: the files are generic templates with placeholders and no private or host-specific data
+
+### Task 6: Refresh Existing Portage Candidate Templates And Metadata
 
 **Files:**
-- Create: `/home/locez/locez-skills/gentoo-maintenance/agents/openai.yaml`
-- Verify: `/home/locez/locez-skills/gentoo-maintenance/SKILL.md`
-- Verify: `/home/locez/locez-skills/gentoo-maintenance/references/*.md`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/package.accept_keywords.custom`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/package.accept_keywords.zz-autounmask`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/package.use.topic`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/assets/tmp-layout/package.mask.pins`
+- Modify: `/home/locez/locez-skills/gentoo-maintenance/agents/openai.yaml`
 
-- [ ] **Step 1: Write `agents/openai.yaml`**
+- [ ] **Step 1: Refresh the existing Portage templates**
 
-Ensure metadata matches `SKILL.md`:
-- display name fits the skill purpose
-- short description reflects triggers, not workflow
-- default prompt fits Portage maintenance use
+Ensure the placeholder comments demonstrate:
+- direct long-term intent
+- dependency provenance comments
+- topic ownership
+- temporary staging language
+- compatibility with the new review summary terminology
 
-- [ ] **Step 2: Run a concise structure audit**
+- [ ] **Step 2: Update `agents/openai.yaml`**
+
+Ensure metadata mentions:
+- Portage conflicts
+- `@world` upgrades
+- `/etc/portage` cleanup
+- binpkg and VPS tradeoffs
+- local profile and workflow preference handling
+
+- [ ] **Step 3: Run a structure and trigger audit**
 
 Run:
 ```bash
 find /home/locez/locez-skills/gentoo-maintenance -maxdepth 3 -type f | sort
 wc -l /home/locez/locez-skills/gentoo-maintenance/SKILL.md
+rg -n "gm-host-profile.yaml|gm-agent-preferences.yaml|prefer_binpkg_when_possible|rules_to_follow" /home/locez/locez-skills/gentoo-maintenance
 ```
-Expected: only intended files exist and `SKILL.md` remains lean
+Expected: only intended files exist, `SKILL.md` stays lean, and the new profile model is visible in the right files
 
-- [ ] **Step 3: Run manual pressure-scenario checks**
+- [ ] **Step 4: Run manual pressure-scenario checks**
 
-Check whether the skill would route these correctly:
-- Qt/KDE world upgrade conflict on desktop
-- Steam-induced multilib dependency exception
-- VPS request to avoid local compilation by trimming non-core features
-- `/etc/portage` cleanup request with mixed direct intent and autounmask residue
+Check whether the updated skill would route these correctly:
+- KDE or Qt world-upgrade conflict on a desktop host with no stored binpkg preference
+- VPS request to avoid local compilation when `allow_non_core_feature_loss` is missing
+- hygiene request where the user previously said to preserve their current layout
+- mixed host where heuristics say desktop but `gm-agent-preferences.yaml` says to treat it as VPS
 
-Expected: each scenario points to the right references and preserves the write-review rule
+Expected: each scenario points to the right references, asks for missing critical fields one at a time, and preserves the review gate before any system write
 
-- [ ] **Step 4: Commit the assets and metadata**
+- [ ] **Step 5: Commit chunk 3**
 
 ```bash
 git -C /home/locez/locez-skills add gentoo-maintenance/assets/tmp-layout gentoo-maintenance/agents/openai.yaml
-git -C /home/locez/locez-skills commit -m "docs: add gentoo maintenance assets and metadata"
+git -C /home/locez/locez-skills commit -m "docs: add gentoo maintenance profile templates"
 ```
 
-- [ ] **Step 5: Final repository status check**
+- [ ] **Step 6: Final repository status check**
 
-Run: `git -C /home/locez/locez-skills status --short`
+Run:
+```bash
+git -C /home/locez/locez-skills status --short
+```
 Expected: clean working tree
 
 ## Execution Notes
 
-- Keep `SKILL.md` concise and push details into references.
-- Do not add extra repo documents such as `README.md` or `CHANGELOG.md` for this skill unless explicitly requested.
-- Do not place private host data into the public repository.
-- If implementation reveals the scope is still too large, split the plan by chunk rather than bloating `SKILL.md`.
+- Use `@writing-skills` when implementing this documentation-heavy skill change.
+- Use `@verification-before-completion` before claiming the skill is finished.
+- Do not add repo-wide documents or migration tooling unless implementation proves they are necessary.
+- Keep private host facts out of the repository and inside staged examples only as placeholders.
+- If plan execution uncovers a need for backward compatibility with the old `~/.config/locez-skills` path, document that as an explicit follow-up instead of silently expanding scope.
 
 ## Ready State
 
-After this plan is saved, the next execution step is to implement it using `writing-skills` for the actual skill authoring work.
+After this plan is saved, the next execution step is to implement it using `@writing-skills`.
