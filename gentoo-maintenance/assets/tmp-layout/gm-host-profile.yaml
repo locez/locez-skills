@@ -1,0 +1,12 @@
+# Example staged candidate for /etc/portage/gm-host-profile.yaml
+role: <desktop|vps|binpkg-builder|mixed>
+prefer_binpkg_when_possible: <true|false>
+prefer_tmp_candidates: true
+require_manual_review_for_writes: true
+allow_non_core_feature_loss: <true|false>
+optimize_for:
+  - <stability|low-maintenance|convenience>
+high_risk_areas:
+  - <kernel|boot|zfs|gpu-driver>
+notes:
+  - <short host reminder>

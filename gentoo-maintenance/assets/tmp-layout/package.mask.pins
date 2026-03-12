@@ -1,4 +1,5 @@
 # Long-term "do not take this" policy.
-# Example:
+# Example staged candidate:
 # >app-editors/example-2.0
 # =sys-kernel/example-kernel-6.13.0
+# Stage temporary masks under /tmp first until they prove durable.

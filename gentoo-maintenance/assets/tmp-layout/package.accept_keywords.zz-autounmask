@@ -1,4 +1,6 @@
 # Dependency exceptions only. Keep short provenance comments.
 #
-# example-app deps
+# world-upgrade helper deps
 # dev-python/example-helper ~amd64
+#
+# Preserve why this exists, but keep it disposable.

@@ -1,0 +1,15 @@
+# Example staged candidate for /etc/portage/gm-agent-preferences.yaml
+prefer_question_when_profile_incomplete: true
+allow_readonly_analysis_without_full_profile: true
+
+host_overrides:
+  treat_this_host_as: <desktop|vps|binpkg-builder|mixed>
+
+workflow:
+  prefer_staged_candidates: true
+  avoid_recommending_autounmask_cleanup_by_default: <true|false>
+
+rules_to_follow:
+  - when: <portage-hygiene|binpkg-optimization|world-upgrade>
+    rule: <durable user instruction>
+    reason: durable user preference

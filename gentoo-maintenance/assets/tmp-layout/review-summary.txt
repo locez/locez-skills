@@ -1,7 +1,13 @@
 Context:
+- loaded profile sources:
+  - </etc/portage/gm-agent-preferences.yaml|missing>
+  - </etc/portage/gm-host-profile.yaml|missing>
 - host role: <desktop|vps|binpkg-builder|mixed>
 - task type: <world-upgrade|conflict-debug|portage-hygiene|package-intent-change|binpkg-optimization|build-or-ebuild-adjustment>
 - risk level: <low|medium|high|critical>
+- missing profile fields: <none|field list>
+- temporary assumptions: <none|short list>
+- final_decision_blocked_by_profile: <true|false>
 
 Findings:
 - <key dependency chain or maintenance finding>
@@ -9,8 +15,9 @@ Findings:
 
 Decision:
 - category: <direct-long-term-intent|dependency-exception|topic-policy|host-policy|temporary-fix>
-- target: <target file or local profile>
+- target: <target file or staged profile candidate>
 - reason: <one-line placement reason>
+- profile influence: <none|field or durable preference that changed the recommendation>
 
 Next write candidates:
 - generated: </tmp/gentoo-maintenance/...>
