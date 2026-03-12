@@ -1,0 +1,4 @@
+# Dependency exceptions only. Keep short provenance comments.
+#
+# example-app deps
+# dev-python/example-helper ~amd64

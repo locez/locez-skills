@@ -1,0 +1,18 @@
+Context:
+- host role: <desktop|vps|binpkg-builder|mixed>
+- task type: <world-upgrade|conflict-debug|portage-hygiene|package-intent-change|binpkg-optimization|build-or-ebuild-adjustment>
+- risk level: <low|medium|high|critical>
+
+Findings:
+- <key dependency chain or maintenance finding>
+- <relevant file hit or policy conflict>
+
+Decision:
+- category: <direct-long-term-intent|dependency-exception|topic-policy|host-policy|temporary-fix>
+- target: <target file or local profile>
+- reason: <one-line placement reason>
+
+Next write candidates:
+- generated: </tmp/gentoo-maintenance/...>
+- copy target: <destination path>
+- apply mode: <overwrite|append|manual merge>

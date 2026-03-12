@@ -1,0 +1,4 @@
+# Topic-scoped long-term policy.
+# Example:
+# media-libs/example abi_x86_32
+# app-misc/example feature-a -feature-b

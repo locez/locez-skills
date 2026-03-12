@@ -1,0 +1,4 @@
+# Direct, long-term user intent only.
+# Example:
+# app-editors/example ~amd64
+# =sys-kernel/example-kernel-6.12.0 ~amd64

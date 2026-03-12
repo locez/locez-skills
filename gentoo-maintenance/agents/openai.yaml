@@ -1,0 +1,7 @@
+interface:
+  display_name: "Gentoo Maintenance"
+  short_description: "Portage conflict and policy maintenance"
+  default_prompt: "Use $gentoo-maintenance to analyze this Portage issue and stage safe candidate changes."
+
+policy:
+  allow_implicit_invocation: true
