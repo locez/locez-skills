@@ -63,6 +63,12 @@ emerge -avuDN --complete-graph=y [--autounmask-backtrack=y] @world
 
 This is a write operation and must stop at the review gate first.
 
+## Profile-Sensitive Notes
+
+- Missing binpkg preference does not change the dry-run commands, but it may block the final recommendation for what to do next.
+- Missing feature-loss tolerance should reduce confidence in any recommendation that trims optional features.
+- `--complete-graph=y` and `--autounmask-backtrack=y` guidance should stay stable unless the user asks for a different safety posture.
+
 ## Policy Notes
 
 - `--complete-graph=y` is the default recommendation for desktop and VPS `@world` work.

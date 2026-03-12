@@ -4,7 +4,16 @@ Use this reference when the user cares more about avoiding local compilation tha
 
 ## Core Principle
 
-Preserve core function first. Non-core features may be trimmed when the host role and user preference allow it.
+Preserve core function first. Non-core features may be trimmed when the host role and stored preferences allow it.
+
+## Required Inputs
+
+Prefer not to guess. Confirm these fields when the task depends on them:
+
+- `prefer_binpkg_when_possible`
+- `allow_non_core_feature_loss`
+
+If either field is missing, continue only with read-only analysis and mark the strategy as temporary.
 
 ## Feature Triage
 
@@ -46,7 +55,8 @@ Good candidates for trimming on VPS or builder hosts:
 
 ## Recording Policy
 
-- stable host-wide tolerance belongs in the local host profile
+- stable host-wide tolerance belongs in `/etc/portage/gm-host-profile.yaml`
+- durable workflow instructions belong in `/etc/portage/gm-agent-preferences.yaml`
 - durable package-group tradeoffs belong in `package.use/<topic>`
 - short-lived experiments stay in `/tmp/gentoo-maintenance/`
 
@@ -55,3 +65,4 @@ Good candidates for trimming on VPS or builder hosts:
 - patching first instead of checking USE policy
 - silently importing VPS tradeoffs into desktop systems
 - treating every compile-saving change as worth permanent policy cost
+- assuming binpkg preference from heuristics when the user has not confirmed it

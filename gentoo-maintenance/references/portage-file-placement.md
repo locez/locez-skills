@@ -53,17 +53,29 @@ Use for durable "do not take this" policy:
 - intentionally delayed major upgrades
 - versions excluded for compatibility reasons
 
-## Local Host Profile
+## `gm-host-profile.yaml`
 
-Use the local profile for machine-wide preference:
+Use `/etc/portage/gm-host-profile.yaml` for machine-level strategy:
 
 - host role
 - optimization goals
+- binpkg preference
 - tolerance for non-core feature loss
 - high-risk areas
 
 Do not mirror `/etc/portage` here.
 
+## `gm-agent-preferences.yaml`
+
+Use `/etc/portage/gm-agent-preferences.yaml` for durable workflow overrides:
+
+- treat-this-host-as overrides
+- review posture preferences
+- layout-preservation rules
+- other reusable agent behavior instructions
+
+Do not store package-level rules here.
+
 ## `/tmp/gentoo-maintenance/`
 
-Use as the staging area for all unreviewed candidates. Default to staging first unless the user has already reviewed the final placement.
+Use as the staging area for all unreviewed candidates, including staged updates for `gm-host-profile.yaml` and `gm-agent-preferences.yaml`.

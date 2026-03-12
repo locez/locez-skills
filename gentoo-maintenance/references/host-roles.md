@@ -6,8 +6,8 @@ Use one of these roles:
 
 | Role | Meaning | Default bias |
 |---|---|---|
-| `desktop` | Interactive machine where user experience and feature completeness matter | preserve full functionality |
-| `vps` | Service-oriented host where low maintenance and minimal local build cost matter | prefer reliability and smaller change surface |
+| `desktop` | Interactive machine where feature completeness matters | preserve full functionality |
+| `vps` | Service-oriented host where low maintenance and lower local build cost matter | prefer reliability and smaller change surface |
 | `binpkg-builder` | Host mainly used to produce binary packages | prefer buildability and package output |
 | `mixed` | Host with meaningful overlap between roles | require explicit tradeoff checks |
 
@@ -15,33 +15,34 @@ Use one of these roles:
 
 Choose role in this order:
 
-1. Explicit user statement
-2. Local host profile file
-3. Hostname mapping if available
-4. Heuristics from installed stack and current task
-5. Ask the user if still ambiguous
-
-## Heuristic Hints
+1. Explicit current-turn user statement
+2. `gm-agent-preferences.yaml` host override
+3. `gm-host-profile.yaml`
+4. Hostname mapping if one is introduced later
+5. Heuristics from installed stack and current task
+6. Ask if still materially ambiguous
 
 Heuristics are only a fallback.
+
+## Heuristic Hints
 
 Desktop signals:
 
 - full Plasma, GNOME, or similar desktop stack
-- gaming stack, multimedia stack, or heavy GUI world set
-- user explicitly cares about feature completeness
+- gaming, multimedia, or heavy GUI world set
+- user cares about feature completeness
 
 VPS signals:
 
 - service packages dominate
-- user asks to avoid local compilation or reduce package surface
-- GUI and desktop integration are optional or absent
+- user wants less local compilation or a smaller package surface
+- GUI and desktop integration are absent or optional
 
 Binpkg builder signals:
 
-- focus is on producing packages for other machines
-- user is willing to trim non-core features to keep builds flowing
-- packaging and dependency breadth matters more than local UX
+- the main purpose is producing packages for other machines
+- the user accepts trimmed non-core features to keep builds flowing
+- dependency breadth matters more than local UX
 
 Mixed signals:
 
@@ -52,13 +53,15 @@ Mixed signals:
 
 Stop and ask when:
 
-- explicit user intent conflicts with the local profile
+- explicit instruction conflicts with stored overrides
+- `gm-host-profile.yaml` and `gm-agent-preferences.yaml` point in different directions
 - heuristics point to two roles with materially different outcomes
-- the task touches both desktop-critical and builder-critical policies
+- required role-sensitive fields are still missing
 
 ## Output Expectation
 
 Every run should report:
 
 - selected host role
-- evidence quality: explicit, profile, heuristic, or uncertain
+- evidence quality: explicit, preference, profile, heuristic, or uncertain
+- whether the role is temporary pending profile confirmation
