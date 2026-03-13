@@ -1,0 +1,7 @@
+interface:
+  display_name: "locez-overlay Bump Workflow"
+  short_description: "Repository-specific bump, removal, and nvchecker issue handling for locez-overlay"
+  default_prompt: "Use $locez-overlay-bump-workflow to maintain packages in locez-overlay, classify them as release-managed/live-only/removed, and enforce the repo's local verification and nvchecker issue rules."
+
+policy:
+  allow_implicit_invocation: true
