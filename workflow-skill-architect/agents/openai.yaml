@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workflow Skill Architect"
+  short_description: "Refactor complex skills into workflows"
+  default_prompt: "Use $workflow-skill-architect to turn this complex task or overloaded skill into a structured workflow skill."
