@@ -6,6 +6,8 @@ Use this reference when designing workflow skills that can run independent work 
 
 Parallelize independent discovery, profiling, extraction, and validation. Serialize decisions, shared writes, irreversible execution, and final synthesis.
 
+Do not use concurrency as a status symbol. For small read-only assessments, single-agent review is usually better unless independent dimensions are large enough to justify merge overhead.
+
 ## Stage Labels
 
 Use these labels in `workflow.md`:
@@ -79,3 +81,4 @@ Before accepting the workflow:
 - Each merge stage has deterministic conflict handling.
 - No worker needs hidden context from another worker's private reasoning.
 - The final response reports unfinished parallel branches or failed worker outputs.
+- The concurrency map does not make a simple stable skill harder to use.

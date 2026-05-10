@@ -48,7 +48,15 @@ Use `references/agent-contracts.md` when defining sub-agents.
 
 Mark each stage as serial, parallelizable, or barrier. Parallelizable stages have independent inputs and do not write the same artifact. Barrier stages wait for upstream artifacts before continuing. Use `references/concurrency.md` when deciding what can safely run concurrently.
 
-### 5. Define Artifact Protocols
+### 5. Decide Whether To Activate Agent Set
+
+Default to single-agent analysis. Activate an agent set only for large, high-risk, actual-refactor, batch, or multi-dimensional reviews where parallel reviewers add real signal. If activated, include an anti-overengineering reviewer. Use `references/agent-set-activation.md`.
+
+### 6. Assign Recommendation Level
+
+Before recommending structure, assign the smallest useful change level: `no-op`, `small-polish`, `protocolize`, `split`, `rebuild`, or `template-extract`. Use `references/refactor-levels.md`.
+
+### 7. Define Artifact Protocols
 
 Every major stage must produce an artifact that the next stage can consume. Prefer structured files or tightly specified Markdown sections. Examples:
 
@@ -63,13 +71,17 @@ Every major stage must produce an artifact that the next stage can consume. Pref
 
 If an artifact does not change downstream behavior, remove it.
 
-### 6. Compress Human Review
+For read-only architecture analysis, do not force artifact files. The final answer can be the artifact. Add artifact protocols only when the task involves actual refactoring, persistent outputs, batch migration, or repeatable execution.
+
+### 8. Compress Human Review
 
 Replace scattered confirmation prompts with review gates. Each gate should present grouped decisions, defaults, impact, and unresolved risk. Confirmations should update rules or references so the same issue is not asked again on the next run.
 
-### 7. Build the New Skill Structure
+### 9. Build the New Skill Structure
 
-Recommended output:
+Recommended target skill structure:
+
+These are example files for generated or refactored skills, not required files for this skill itself.
 
 ```text
 target-skill/
@@ -79,6 +91,7 @@ target-skill/
 ├── references/
 │   ├── workflow.md
 │   ├── agent-contracts.md
+│   ├── agent-set-activation.md
 │   ├── concurrency.md
 │   ├── domain-model.md
 │   ├── rules.md
@@ -88,18 +101,22 @@ target-skill/
     └── optional deterministic helpers
 ```
 
+`agents/openai.yaml` is UI metadata for skill listings and default prompts. Worker or sub-agent contracts belong in `references/agent-contracts.md`.
+
 Only create directories and files that the target skill needs. Do not add README, installation guides, changelogs, or narrative docs.
 
-### 8. Validate
+### 10. Validate
 
 Validate both structure and behavior:
 
-- Run the skill validator if available.
+- Run the platform skill validator when available, such as `quick_validate.py <skill-folder>` in Codex skill-creator environments. If no validator exists, do a manual structural check.
 - Check that frontmatter describes triggering conditions.
 - Confirm `SKILL.md` can be understood without loading every reference.
 - Confirm each referenced file is directly linked from `SKILL.md`.
 - Confirm legacy workflow files are either integrated or explicitly demoted to cookbook/reference status.
 - Confirm independent stages are marked for concurrent execution and shared-write hazards are blocked.
+- Confirm the final recommendation includes a change level from `references/refactor-levels.md`.
+- Confirm agent set and artifact protocols were not added where a smaller change would solve the problem.
 - Forward-test with a realistic bad input skill or task request when possible.
 
 ## Domain Templates
@@ -110,8 +127,12 @@ For general workflow refactoring details, read `references/workflow-refactoring.
 
 For sub-agent contract templates, read `references/agent-contracts.md`.
 
+For deciding whether to use a review agent set, read `references/agent-set-activation.md`.
+
 For concurrency and dependency design, read `references/concurrency.md`.
+
+For recommendation levels and anti-overengineering triage, read `references/refactor-levels.md`.
 
 ## Output Quality Bar
 
-A good workflow skill makes the complex path boring: it has a short main entry point, bounded worker responsibilities, explicit artifacts, parallel execution where safe, fewer interruptions, review gates at high-risk decisions, and validation that can catch regressions. If the result is merely a rewritten long prompt or a needlessly serial pipeline, the architecture work failed.
+A good workflow skill makes the complex path boring: it has a short main entry point, bounded worker responsibilities when needed, explicit artifacts when they change behavior, parallel execution where safe, fewer interruptions, review gates at high-risk decisions, and validation that can catch regressions. If the result is merely a rewritten long prompt, a needlessly serial pipeline, or unnecessary architecture around a simple stable skill, the architecture work failed.

@@ -78,8 +78,10 @@ The skill is designed to:
 
 - keep `SKILL.md` as a compact orchestrator
 - move detailed procedures into `references/`
-- define sub-agent contracts and artifact protocols
-- mark serial, parallelizable, barrier, and merge stages
+- define sub-agent contracts and artifact protocols only when they change behavior
+- choose the smallest useful refactor level before recommending structure
+- default to single-agent review unless an agent set adds real signal
+- mark serial, parallelizable, barrier, and merge stages when concurrency is useful
 - compress repeated questions into review gates
 
 ## Installing Into Codex

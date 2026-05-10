@@ -1,6 +1,6 @@
 # Agent Contracts
 
-Use this reference when defining sub-agents for a workflow skill.
+Use this reference when defining sub-agents for a workflow skill. Do not define sub-agents by default; first check `agent-set-activation.md` and confirm the workflow benefits from role boundaries.
 
 ## Contract Template
 
@@ -82,6 +82,10 @@ Groups ambiguous cases for human review. Does not ask one-off questions during d
 
 Answers questions over approved outputs and reference material. Does not re-clean or reinterpret raw inputs.
 
+### Anti-Overengineering Reviewer
+
+Challenges whether the proposed workflow structure is necessary. Looks for needless artifacts, over-specific agent roles, fake concurrency, and changes that make a stable skill harder to use.
+
 ## Boundary Tests
 
 Use these tests when reviewing agent contracts:
@@ -92,3 +96,4 @@ Use these tests when reviewing agent contracts:
 - Can it run concurrently without racing another worker for the same artifact?
 - Are forbidden actions explicit enough to prevent scope creep?
 - Does it return uncertainty instead of making hidden business decisions?
+- Is this agent necessary, or would a simpler single-agent workflow be clearer?
