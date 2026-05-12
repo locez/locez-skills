@@ -2,7 +2,7 @@
 
 Open-source repository for reusable AI skills.
 
-This repository is meant to hold workflow and maintenance skills that can be reused across machines and projects without embedding private host state.
+This repository is meant to hold workflow, maintenance, and judgment-calibration skills that can be reused across machines and projects without embedding private host state.
 
 ## Layout
 
@@ -25,6 +25,9 @@ workflow-skill-architect/
   SKILL.md
   references/
   agents/
+
+lens/
+  SKILL.md
 ```
 
 ## Current Skills
@@ -84,12 +87,29 @@ The skill is designed to:
 - mark serial, parallelizable, barrier, and merge stages when concurrency is useful
 - compress repeated questions into review gates
 
+### `locez-lens` (repo dir: `lens/`)
+
+Use this skill when the visible issue may be too narrow for the real decision, especially for bugs, code changes, reviews, architecture, product decisions, writing, research, and general problem solving.
+
+The skill is designed to:
+
+- pause before the obvious local fix
+- check whether the ask is really an instance, symptom, boundary failure, or wrong framing
+- keep the check lightweight unless the answer needs a broader scope
+- add a short Lens Note only when it changes the next action
+
 ## Installing Into Codex
 
 For local development, install a skill from this repository with a symlink:
 
 ```bash
 ln -s ~/locez-skills/<skill-name> ~/.codex/skills/<skill-name>
+```
+
+`lens/` is the repo directory for `locez-lens`:
+
+```bash
+ln -s ~/locez-skills/lens ~/.codex/skills/locez-lens
 ```
 
 If the link already exists and you want to recreate it:
@@ -116,6 +136,7 @@ Typical requests:
 - `$gentoo-maintenance 这个 USE 应该进 steam 还是 system`
 - `$locez-overlay-bump-workflow 帮我 bump app-misc/example`
 - `$workflow-skill-architect 帮我把这个数据清洗 prompt 改成 workflow skill`
+- `$locez-lens 帮我看这个修复是不是框太窄了`
 
 ## Repository Rules
 
