@@ -1,6 +1,6 @@
 ---
 name: locez-lens
-description: "Use across bugs, code changes, reviews, architecture, product decisions, writing, research, and general problem solving when the task may be framed too narrowly by the visible issue, example, proposal, or decision. Apply Locez Lens as a lightweight scope and judgment calibration before answering or changing anything."
+description: "Use across bugs, code changes, reviews, architecture, product decisions, writing, research, and general problem solving when the user presents a visible issue, example, proposal, or decision. MUST apply Locez Lens as a lightweight scope and judgment calibration before answering or changing anything."
 ---
 
 # Locez Lens
