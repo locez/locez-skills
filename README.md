@@ -1,148 +1,149 @@
 # locez-skills
 
-Open-source repository for reusable AI skills.
+Reusable AI skills for agentic engineering work.
 
-This repository is meant to hold workflow, maintenance, and judgment-calibration skills that can be reused across machines and projects without embedding private host state.
+[中文说明](README.zh-CN.md)
 
-## Layout
+This repository collects workflow, maintenance, analysis, and judgment-calibration skills that can be reused across agents, machines, and projects without embedding private host state. A skill is not just a prompt. It is a small, versioned working protocol that tells the agent when to use it, how to reason about the task, what artifacts or checks matter, and when the work is ready to hand back.
 
-```text
-docs/
-  specs/   # design docs and decisions
-  plans/   # implementation plans
+For a longer beginner guide, see [docs/skill-primer.md](docs/skill-primer.md).
 
-gentoo-maintenance/
-  SKILL.md
-  references/
-  assets/
-  agents/
+Deep dives from that guide:
 
-locez-overlay-bump-workflow/
-  SKILL.md
-  agents/
+- [Locez Lens: why scope calibration matters](docs/skill-primer.md#locez-lens-deep-dive)
+- [workflow-skill-architect: turning long prompts into workflows](docs/skill-primer.md#workflow-skill-architect-deep-dive)
+- [How Locez Lens and workflow-skill-architect work together](docs/skill-primer.md#lens-and-workflow-skill-architect)
 
-workflow-skill-architect/
-  SKILL.md
-  references/
-  agents/
+## Skill Catalog
 
-lens/
-  SKILL.md
-```
+| Skill | Repository Path | Use When | What It Helps With |
+| --- | --- | --- | --- |
+| `$gentoo-maintenance` | `gentoo-maintenance/` | Handling Portage conflicts, `@world` upgrades, `/etc/portage` cleanup, binpkg tradeoffs, or local Gentoo policy placement. | Classifies host role and task type, separates local preferences from generated rules, stages candidate Portage changes under `/tmp`, and stops before non-`/tmp` writes. |
+| `$locez-overlay-bump-workflow` | `locez-overlay-bump-workflow/` | Maintaining packages in `/home/locez/locez-overlay`, especially bumping, removing, or reconciling nvchecker-tracked packages. | Distinguishes release-managed, live-only, and removed packages; keeps nvchecker automation aligned with package state; requires local ebuild verification for meaningful changes. |
+| `$repo-visual-analysis` | `repo-visual-analysis/` | Understanding a repository, generating visual architecture or flow maps, producing a clickable visual report, or finding evidence-backed improvement opportunities. | Builds quick scans, focused maps, Mermaid or rendered visual reports, claim/evidence traces, and repository-informed opportunity lists without pretending weak evidence is certain. |
+| `$workflow-skill-architect` | `workflow-skill-architect/` | Creating or refactoring complex workflow skills, especially overloaded `SKILL.md` files, unclear sub-agent roles, repeated confirmations, or weak validation. | Turns long prompts into structured workflow skills with orchestration rules, references, artifact protocols, optional agent contracts, concurrency boundaries, and validation gates. |
+| `$locez-lens` | `lens/` | Any bug, review, writing, architecture, product, research, or code-change task where the visible issue may be too narrow. | Adds a lightweight scope check before acting so the agent can decide whether the request is an instance, symptom, boundary failure, repeated pattern, or wrong framing. |
 
-## Current Skills
+## Which Skill Should I Start With?
 
-### `gentoo-maintenance`
-
-Use this skill for:
-
-- Portage conflicts
-- `@world` upgrade analysis
-- `/etc/portage` cleanup and rule placement
-- VPS and binpkg feature-trimming tradeoffs
-- deciding whether a rule belongs in `custom`, `zz-autounmask`, a topic file, or `package.mask`
-
-The skill is designed to:
-
-- identify host role first
-- identify task type second
-- classify changes before choosing file placement
-- stage candidate files under `/tmp/gentoo-maintenance/`
-- stop for review before any non-`/tmp` write
-
-### `locez-overlay-bump-workflow`
-
-Use this skill for package maintenance in `/home/locez/locez-overlay` when:
-
-- bumping nvchecker-tracked packages
-- removing packages from the overlay
-- reconciling live-only or removed packages with `[nvchecker]` issues
-- deciding whether a package belongs in `.github/workflows/nvchecker.toml`
-
-The skill is designed to:
-
-- classify packages as `release-managed`, `live-only`, or `removed`
-- keep release-bump automation aligned with package state
-- centralize issue handling in `.github/workflows/nvchecker.yml`
-- require local manifest, pkgcheck, and ebuild verification for meaningful ebuild changes
-
-### `workflow-skill-architect`
-
-Use this skill when creating or refactoring complex workflow skills, especially when an existing skill has:
-
-- an overloaded main `SKILL.md`
-- unclear sub-agent responsibilities
-- scattered human confirmations
-- missing intermediate artifacts
-- weak validation or traceability
-- needless serialization of independent work
-
-The skill is designed to:
-
-- keep `SKILL.md` as a compact orchestrator
-- move detailed procedures into `references/`
-- define sub-agent contracts and artifact protocols only when they change behavior
-- choose the smallest useful refactor level before recommending structure
-- default to single-agent review unless an agent set adds real signal
-- mark serial, parallelizable, barrier, and merge stages when concurrency is useful
-- compress repeated questions into review gates
-
-### `locez-lens` (repo dir: `lens/`)
-
-Use this skill when the visible issue may be too narrow for the real decision, especially for bugs, code changes, reviews, architecture, product decisions, writing, research, and general problem solving.
-
-The skill is designed to:
-
-- pause before the obvious local fix
-- check whether the ask is really an instance, symptom, boundary failure, or wrong framing
-- keep the check lightweight unless the answer needs a broader scope
-- add a short Lens Note only when it changes the next action
-
-## Installing Into Codex
-
-For local development, install a skill from this repository with a symlink:
-
-```bash
-ln -s ~/locez-skills/<skill-name> ~/.codex/skills/<skill-name>
-```
-
-`lens/` is the repo directory for `locez-lens`:
-
-```bash
-ln -s ~/locez-skills/lens ~/.codex/skills/locez-lens
-```
-
-If the link already exists and you want to recreate it:
-
-```bash
-rm ~/.codex/skills/<skill-name>
-ln -s ~/locez-skills/<skill-name> ~/.codex/skills/<skill-name>
-```
-
-After installing or updating a skill, restart Codex so it picks up the new files.
-
-## Using The Skill
-
-In a new Codex session, invoke a skill explicitly:
-
-```text
-$gentoo-maintenance 帮我分析这次 @world 冲突
-```
+- For Gentoo system maintenance, start with `$gentoo-maintenance`.
+- For `locez-overlay` package bump or nvchecker work, start with `$locez-overlay-bump-workflow`.
+- For codebase understanding, visual maps, or architecture reports, start with `$repo-visual-analysis`.
+- For designing or repairing another skill, start with `$workflow-skill-architect`.
+- For ambiguous fixes, reviews, decisions, or writing where the framing may be too narrow, start with `$locez-lens`.
 
 Typical requests:
 
-- `$gentoo-maintenance 这次 slot conflict 的根因是什么`
-- `$gentoo-maintenance 帮我整理 package.accept_keywords`
-- `$gentoo-maintenance 这个 USE 应该进 steam 还是 system`
-- `$locez-overlay-bump-workflow 帮我 bump app-misc/example`
-- `$workflow-skill-architect 帮我把这个数据清洗 prompt 改成 workflow skill`
-- `$locez-lens 帮我看这个修复是不是框太窄了`
+```text
+$gentoo-maintenance analyze this @world slot conflict
+$gentoo-maintenance help me clean package.accept_keywords
+$locez-overlay-bump-workflow bump app-misc/example
+$repo-visual-analysis create a visual report for this repository
+$workflow-skill-architect refactor this data-cleaning prompt into a workflow skill
+$locez-lens check whether this fix is scoped too narrowly
+```
+
+## Installing Into Agents
+
+These skills follow the `SKILL.md` package shape, so the same repository checkout can be symlinked into several agent runtimes.
+
+| Runtime | Personal Skill Directory | Project Skill Directory | Notes |
+| --- | --- | --- | --- |
+| Claude Code | `~/.claude/skills/<skill-name>/` | `.claude/skills/<skill-name>/` | Personal skills apply across projects; project skills stay with one repository. |
+| Codex / Agent Skills compatible tools | `~/.agents/skills/<skill-name>/` | Tool-dependent | Useful as a shared directory for tools that read the Agent Skills convention. Some Codex setups may also read `~/.codex/skills/`. |
+| OpenCode | `~/.config/opencode/skills/<skill-name>/` | `.opencode/skills/<skill-name>/` | OpenCode also discovers Claude-compatible `.claude/skills/` and agent-compatible `.agents/skills/` locations. |
+| Hermes Agent | `~/.hermes/skills/<skill-name>/` | `skills/` or configured external directories | Hermes can also scan shared external directories such as `~/.agents/skills` via `skills.external_dirs`. |
+
+Most skills use the same repository directory and skill name. For example, install globally for Claude Code:
+
+```bash
+mkdir -p ~/.claude/skills
+ln -s ~/locez-skills/gentoo-maintenance ~/.claude/skills/gentoo-maintenance
+ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.claude/skills/locez-overlay-bump-workflow
+ln -s ~/locez-skills/repo-visual-analysis ~/.claude/skills/repo-visual-analysis
+ln -s ~/locez-skills/workflow-skill-architect ~/.claude/skills/workflow-skill-architect
+```
+
+Install into the shared Agent Skills directory used by Codex-style runtimes:
+
+```bash
+mkdir -p ~/.agents/skills
+ln -s ~/locez-skills/gentoo-maintenance ~/.agents/skills/gentoo-maintenance
+ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.agents/skills/locez-overlay-bump-workflow
+ln -s ~/locez-skills/repo-visual-analysis ~/.agents/skills/repo-visual-analysis
+ln -s ~/locez-skills/workflow-skill-architect ~/.agents/skills/workflow-skill-architect
+```
+
+`locez-lens` is stored in the shorter `lens/` directory:
+
+```bash
+ln -s ~/locez-skills/lens ~/.claude/skills/locez-lens
+ln -s ~/locez-skills/lens ~/.agents/skills/locez-lens
+```
+
+For OpenCode:
+
+```bash
+mkdir -p ~/.config/opencode/skills
+ln -s ~/locez-skills/gentoo-maintenance ~/.config/opencode/skills/gentoo-maintenance
+ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.config/opencode/skills/locez-overlay-bump-workflow
+ln -s ~/locez-skills/repo-visual-analysis ~/.config/opencode/skills/repo-visual-analysis
+ln -s ~/locez-skills/workflow-skill-architect ~/.config/opencode/skills/workflow-skill-architect
+ln -s ~/locez-skills/lens ~/.config/opencode/skills/locez-lens
+```
+
+For Hermes Agent, either symlink directly:
+
+```bash
+mkdir -p ~/.hermes/skills
+ln -s ~/locez-skills/gentoo-maintenance ~/.hermes/skills/gentoo-maintenance
+ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.hermes/skills/locez-overlay-bump-workflow
+ln -s ~/locez-skills/repo-visual-analysis ~/.hermes/skills/repo-visual-analysis
+ln -s ~/locez-skills/workflow-skill-architect ~/.hermes/skills/workflow-skill-architect
+ln -s ~/locez-skills/lens ~/.hermes/skills/locez-lens
+```
+
+Or keep shared skills in `~/.agents/skills` and add that directory to `~/.hermes/config.yaml`:
+
+```yaml
+skills:
+  external_dirs:
+    - ~/.agents/skills
+```
+
+If a link already exists and you want to recreate it:
+
+```bash
+RUNTIME_SKILL_DIR=~/.agents/skills
+rm "$RUNTIME_SKILL_DIR/<skill-name>"
+ln -s ~/locez-skills/<repo-directory> "$RUNTIME_SKILL_DIR/<skill-name>"
+```
+
+After installing or updating a skill, restart the agent or start a new session if your runtime does not hot-reload skill directories.
+
+## Repository Map
+
+```text
+<skill-name>/
+  SKILL.md       # trigger, core rules, and navigation
+  references/    # detailed workflow rules, templates, contracts, validation
+  scripts/       # deterministic helpers used by the skill
+  agents/        # UI metadata for skill listings
+  assets/        # optional runtime assets
+
+docs/
+  specs/         # design history and decisions
+  plans/         # implementation plans
+```
+
+Not every skill has every optional directory. Keep skill directories focused on runtime resources; put repository-level documentation in `README.md`, `README.zh-CN.md`, or `docs/`.
 
 ## Repository Rules
 
 - Keep private machine state out of this repository.
-- Keep `SKILL.md` lean and move details into `references/`.
-- Prefer templates in `assets/` over copying live system config into the repo.
+- Keep `SKILL.md` lean and move detailed procedures into `references/`.
+- Prefer deterministic helpers in `scripts/` when repeated work should not depend on model memory.
+- Prefer templates in `assets/` over copying live system configuration into the repo.
 - Record design history in `docs/specs/`.
 - Record implementation plans in `docs/plans/`.
-- Keep skill directories focused on runtime resources; put repository documentation in `README.md` or `docs/`.
+- Validate skills after meaningful changes.
