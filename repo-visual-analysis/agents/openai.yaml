@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repo Visual Analysis"
+  short_description: "Evidence-backed visual repository maps"
+  default_prompt: "Use $repo-visual-analysis to scan this repository, draw concise architecture/flow diagrams, and identify evidence-backed improvement opportunities."
