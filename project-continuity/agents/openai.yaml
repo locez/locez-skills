@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Continuity"
+  short_description: "Continue projects across sessions"
+  default_prompt: "Use $project-continuity to initialize or continue one session lease for this project."
