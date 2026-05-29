@@ -1,4 +1,8 @@
-# Project Continuity Repository Integration
+# Project Continuity Repository Integration (Historical)
+
+> Historical note: this integration record is superseded by
+> [Project Continuity Unavailable Decision](2026-05-29-project-continuity-unavailable.md).
+> The skill remains in the repository as an archive, but it is no longer available for active use.
 
 ## Context
 
@@ -51,13 +55,15 @@ No README or changelog is added inside the skill directory. The skill directory 
 - `assets/continuity/` contains templates copied into target projects during initialization or repair.
 - `agents/openai.yaml` supplies UI metadata for skill listing and invocation.
 
-## Validation Expectations
+## Historical Validation Expectations
 
-When this skill changes, verify:
+These expectations applied while the skill was active. They are kept only to explain the original integration criteria and are superseded by the unavailable decision above. Do not use them as current validation rules.
+
+When this skill was active, changes were expected to verify:
 
 - frontmatter includes `name: project-continuity` and a trigger-focused `description`;
 - `SKILL.md` directly references every file in `references/`;
 - every required continuity artifact named in `SKILL.md` has a matching template in `assets/continuity/`;
-- the next-session command remains `/goal $project-continuity`;
+- the next-session command remained `/goal $project-continuity`;
 - repository README files list the skill, installation examples, and invocation examples;
 - repository wording states that these skills are Locez-designed, not a collected third-party catalog.

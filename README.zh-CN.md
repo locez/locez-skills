@@ -4,7 +4,7 @@
 
 [English README](README.md)
 
-这个仓库保存 Locez 自己设计的工作流、维护、分析、连续性和判断校准类 skills，用来在不同 agent、机器和项目之间复用，不把私人主机状态写进仓库。这不是第三方 skill 收集目录。Skill 不只是提示词；它是一份小型、可版本化的工作协议，告诉 agent 什么时候启用、怎样判断任务、哪些产物或检查重要，以及什么情况下可以交付。
+这个仓库保存 Locez 自己设计的工作流、维护、分析和判断校准类可用 skills，同时保留一个已归档的 continuity skill 作为历史参考。可用 skills 用来在不同 agent、机器和项目之间复用，不把私人主机状态写进仓库。这不是第三方 skill 收集目录。Skill 不只是提示词；它是一份小型、可版本化的工作协议，告诉 agent 什么时候启用、怎样判断任务、哪些产物或检查重要，以及什么情况下可以交付。
 
 给新人的更详细说明见 [docs/skill-primer.zh-CN.md](docs/skill-primer.zh-CN.md)。
 
@@ -20,7 +20,7 @@
 | --- | --- | --- | --- |
 | `$gentoo-maintenance` | `gentoo-maintenance/` | 处理 Portage 冲突、`@world` 升级、`/etc/portage` 清理、binpkg 取舍，或判断 Gentoo 本地规则应该放在哪里。 | 先判断主机角色和任务类型，区分本地偏好与生成规则，把候选 Portage 改动暂存到 `/tmp`，并在任何非 `/tmp` 写入前停下来给用户审。 |
 | `$locez-overlay-bump-workflow` | `locez-overlay-bump-workflow/` | 维护 `/home/locez/locez-overlay` 里的包，尤其是 bump、删除、或对齐 nvchecker 跟踪状态。 | 区分 release-managed、live-only、removed 包；让 nvchecker 自动化与包状态一致；对有意义的 ebuild 改动要求本地验证。 |
-| `$project-continuity` | `project-continuity/` | 跨 Codex 新会话初始化或继续长期项目，需要 durable state、handoff 和固定下一次命令时。 | 创建或维护连续性产物，每次 lease 只推进一个有边界的 session milestone，保留沟通语言，记录 handoff，并提交安全的 lease 改动。 |
+| `$project-continuity` | `project-continuity/` | 不可用；仅作为历史归档保留。 | 不要用于实际工作。见[中文决策说明](docs/specs/2026-05-29-project-continuity-unavailable.zh-CN.md)。 |
 | `$repo-visual-analysis` | `repo-visual-analysis/` | 理解一个仓库、生成架构/流程图、产出可打开的可视化报告，或寻找有证据支撑的改进机会。 | 产出 quick scan、focused map、Mermaid 或 HTML 可视化报告、claim/evidence 追踪和基于仓库证据的机会列表，同时避免把弱证据写成确定结论。 |
 | `$workflow-skill-architect` | `workflow-skill-architect/` | 创建或重构复杂 workflow skill，尤其是主 `SKILL.md` 过载、子 agent 角色不清、反复向用户确认、缺少中间产物或验证弱的时候。 | 把长 prompt 改成结构化 workflow skill：入口编排、references、artifact 协议、可选 agent 合同、并发边界和验证门都分清楚。 |
 | `$locez-lens` | `lens/` | bug、review、写作、架构、产品、研究或代码改动中，用户给出的可见问题可能太窄时。 | 在行动前做轻量 scope 校准，判断当前请求是一个实例、症状、边界失败、重复模式，还是 framing 本身有问题。 |
@@ -29,7 +29,7 @@
 
 - Gentoo 系统维护：从 `$gentoo-maintenance` 开始。
 - `locez-overlay` 包 bump 或 nvchecker 工作：从 `$locez-overlay-bump-workflow` 开始。
-- 需要跨会话保留 durable state 的项目：从 `$project-continuity` 开始。
+- `$project-continuity` 已不可用；不要再用它维护跨 session 的 durable project state。
 - 代码仓库理解、可视化图、架构报告：从 `$repo-visual-analysis` 开始。
 - 设计或修复另一个 skill：从 `$workflow-skill-architect` 开始。
 - 修复、评审、决策或写作的边界可能太窄：从 `$locez-lens` 开始。
@@ -40,8 +40,6 @@
 $gentoo-maintenance 分析这次 @world slot conflict
 $gentoo-maintenance 帮我整理 package.accept_keywords
 $locez-overlay-bump-workflow 帮我 bump app-misc/example
-$project-continuity 初始化这个仓库的多会话状态
-$project-continuity 继续当前 lease
 $repo-visual-analysis 给这个仓库生成一份 visual report
 $workflow-skill-architect 把这个数据清洗 prompt 改成 workflow skill
 $locez-lens 看看这个修复是不是框太窄了
@@ -64,7 +62,6 @@ $locez-lens 看看这个修复是不是框太窄了
 mkdir -p ~/.claude/skills
 ln -s ~/locez-skills/gentoo-maintenance ~/.claude/skills/gentoo-maintenance
 ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.claude/skills/locez-overlay-bump-workflow
-ln -s ~/locez-skills/project-continuity ~/.claude/skills/project-continuity
 ln -s ~/locez-skills/repo-visual-analysis ~/.claude/skills/repo-visual-analysis
 ln -s ~/locez-skills/workflow-skill-architect ~/.claude/skills/workflow-skill-architect
 ```
@@ -75,7 +72,6 @@ ln -s ~/locez-skills/workflow-skill-architect ~/.claude/skills/workflow-skill-ar
 mkdir -p ~/.agents/skills
 ln -s ~/locez-skills/gentoo-maintenance ~/.agents/skills/gentoo-maintenance
 ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.agents/skills/locez-overlay-bump-workflow
-ln -s ~/locez-skills/project-continuity ~/.agents/skills/project-continuity
 ln -s ~/locez-skills/repo-visual-analysis ~/.agents/skills/repo-visual-analysis
 ln -s ~/locez-skills/workflow-skill-architect ~/.agents/skills/workflow-skill-architect
 ```
@@ -93,7 +89,6 @@ OpenCode 示例：
 mkdir -p ~/.config/opencode/skills
 ln -s ~/locez-skills/gentoo-maintenance ~/.config/opencode/skills/gentoo-maintenance
 ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.config/opencode/skills/locez-overlay-bump-workflow
-ln -s ~/locez-skills/project-continuity ~/.config/opencode/skills/project-continuity
 ln -s ~/locez-skills/repo-visual-analysis ~/.config/opencode/skills/repo-visual-analysis
 ln -s ~/locez-skills/workflow-skill-architect ~/.config/opencode/skills/workflow-skill-architect
 ln -s ~/locez-skills/lens ~/.config/opencode/skills/locez-lens
@@ -105,7 +100,6 @@ Hermes Agent 可以直接 symlink：
 mkdir -p ~/.hermes/skills
 ln -s ~/locez-skills/gentoo-maintenance ~/.hermes/skills/gentoo-maintenance
 ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.hermes/skills/locez-overlay-bump-workflow
-ln -s ~/locez-skills/project-continuity ~/.hermes/skills/project-continuity
 ln -s ~/locez-skills/repo-visual-analysis ~/.hermes/skills/repo-visual-analysis
 ln -s ~/locez-skills/workflow-skill-architect ~/.hermes/skills/workflow-skill-architect
 ln -s ~/locez-skills/lens ~/.hermes/skills/locez-lens

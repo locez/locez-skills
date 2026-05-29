@@ -4,7 +4,7 @@ Reusable AI skills for agentic engineering work.
 
 [中文说明](README.zh-CN.md)
 
-This repository contains Locez-designed workflow, maintenance, analysis, continuity, and judgment-calibration skills that can be reused across agents, machines, and projects without embedding private host state. These are original working protocols, not a collected catalog of third-party skills. A skill is not just a prompt. It is a small, versioned working protocol that tells the agent when to use it, how to reason about the task, what artifacts or checks matter, and when the work is ready to hand back.
+This repository contains Locez-designed workflow, maintenance, analysis, and judgment-calibration skills, plus one archived continuity skill retained for historical reference. The active skills can be reused across agents, machines, and projects without embedding private host state. These are original working protocols, not a collected catalog of third-party skills. A skill is not just a prompt. It is a small, versioned working protocol that tells the agent when to use it, how to reason about the task, what artifacts or checks matter, and when the work is ready to hand back.
 
 For a longer beginner guide, see [docs/skill-primer.md](docs/skill-primer.md).
 
@@ -20,7 +20,7 @@ Deep dives from that guide:
 | --- | --- | --- | --- |
 | `$gentoo-maintenance` | `gentoo-maintenance/` | Handling Portage conflicts, `@world` upgrades, `/etc/portage` cleanup, binpkg tradeoffs, or local Gentoo policy placement. | Classifies host role and task type, separates local preferences from generated rules, stages candidate Portage changes under `/tmp`, and stops before non-`/tmp` writes. |
 | `$locez-overlay-bump-workflow` | `locez-overlay-bump-workflow/` | Maintaining packages in `/home/locez/locez-overlay`, especially bumping, removing, or reconciling nvchecker-tracked packages. | Distinguishes release-managed, live-only, and removed packages; keeps nvchecker automation aligned with package state; requires local ebuild verification for meaningful changes. |
-| `$project-continuity` | `project-continuity/` | Initializing or continuing a long-running project across fresh Codex sessions with durable state, handoffs, and a fixed next-session command. | Creates or maintains continuity artifacts, advances one bounded session milestone per lease, preserves communication language, records handoffs, and commits safe lease changes. |
+| `$project-continuity` | `project-continuity/` | Unavailable; retained only as an archive. | Do not use for active work. See [the decision record](docs/specs/2026-05-29-project-continuity-unavailable.md). |
 | `$repo-visual-analysis` | `repo-visual-analysis/` | Understanding a repository, generating visual architecture or flow maps, producing a clickable visual report, or finding evidence-backed improvement opportunities. | Builds quick scans, focused maps, Mermaid or rendered visual reports, claim/evidence traces, and repository-informed opportunity lists without pretending weak evidence is certain. |
 | `$workflow-skill-architect` | `workflow-skill-architect/` | Creating or refactoring complex workflow skills, especially overloaded `SKILL.md` files, unclear sub-agent roles, repeated confirmations, or weak validation. | Turns long prompts into structured workflow skills with orchestration rules, references, artifact protocols, optional agent contracts, concurrency boundaries, and validation gates. |
 | `$locez-lens` | `lens/` | Any bug, review, writing, architecture, product, research, or code-change task where the visible issue may be too narrow. | Adds a lightweight scope check before acting so the agent can decide whether the request is an instance, symptom, boundary failure, repeated pattern, or wrong framing. |
@@ -29,7 +29,7 @@ Deep dives from that guide:
 
 - For Gentoo system maintenance, start with `$gentoo-maintenance`.
 - For `locez-overlay` package bump or nvchecker work, start with `$locez-overlay-bump-workflow`.
-- For a project that needs durable state across sessions, start with `$project-continuity`.
+- `$project-continuity` is unavailable; do not use it for durable project state across sessions.
 - For codebase understanding, visual maps, or architecture reports, start with `$repo-visual-analysis`.
 - For designing or repairing another skill, start with `$workflow-skill-architect`.
 - For ambiguous fixes, reviews, decisions, or writing where the framing may be too narrow, start with `$locez-lens`.
@@ -40,8 +40,6 @@ Typical requests:
 $gentoo-maintenance analyze this @world slot conflict
 $gentoo-maintenance help me clean package.accept_keywords
 $locez-overlay-bump-workflow bump app-misc/example
-$project-continuity initialize this repository for multi-session work
-$project-continuity continue the current lease
 $repo-visual-analysis create a visual report for this repository
 $workflow-skill-architect refactor this data-cleaning prompt into a workflow skill
 $locez-lens check whether this fix is scoped too narrowly
@@ -64,7 +62,6 @@ Most skills use the same repository directory and skill name. For example, insta
 mkdir -p ~/.claude/skills
 ln -s ~/locez-skills/gentoo-maintenance ~/.claude/skills/gentoo-maintenance
 ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.claude/skills/locez-overlay-bump-workflow
-ln -s ~/locez-skills/project-continuity ~/.claude/skills/project-continuity
 ln -s ~/locez-skills/repo-visual-analysis ~/.claude/skills/repo-visual-analysis
 ln -s ~/locez-skills/workflow-skill-architect ~/.claude/skills/workflow-skill-architect
 ```
@@ -75,7 +72,6 @@ Install into the shared Agent Skills directory used by Codex-style runtimes:
 mkdir -p ~/.agents/skills
 ln -s ~/locez-skills/gentoo-maintenance ~/.agents/skills/gentoo-maintenance
 ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.agents/skills/locez-overlay-bump-workflow
-ln -s ~/locez-skills/project-continuity ~/.agents/skills/project-continuity
 ln -s ~/locez-skills/repo-visual-analysis ~/.agents/skills/repo-visual-analysis
 ln -s ~/locez-skills/workflow-skill-architect ~/.agents/skills/workflow-skill-architect
 ```
@@ -93,7 +89,6 @@ For OpenCode:
 mkdir -p ~/.config/opencode/skills
 ln -s ~/locez-skills/gentoo-maintenance ~/.config/opencode/skills/gentoo-maintenance
 ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.config/opencode/skills/locez-overlay-bump-workflow
-ln -s ~/locez-skills/project-continuity ~/.config/opencode/skills/project-continuity
 ln -s ~/locez-skills/repo-visual-analysis ~/.config/opencode/skills/repo-visual-analysis
 ln -s ~/locez-skills/workflow-skill-architect ~/.config/opencode/skills/workflow-skill-architect
 ln -s ~/locez-skills/lens ~/.config/opencode/skills/locez-lens
@@ -105,7 +100,6 @@ For Hermes Agent, either symlink directly:
 mkdir -p ~/.hermes/skills
 ln -s ~/locez-skills/gentoo-maintenance ~/.hermes/skills/gentoo-maintenance
 ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.hermes/skills/locez-overlay-bump-workflow
-ln -s ~/locez-skills/project-continuity ~/.hermes/skills/project-continuity
 ln -s ~/locez-skills/repo-visual-analysis ~/.hermes/skills/repo-visual-analysis
 ln -s ~/locez-skills/workflow-skill-architect ~/.hermes/skills/workflow-skill-architect
 ln -s ~/locez-skills/lens ~/.hermes/skills/locez-lens
