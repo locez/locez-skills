@@ -18,6 +18,7 @@
 
 | Skill | 仓库目录 | 什么时候用 | 主要作用 |
 | --- | --- | --- | --- |
+| `$gentoo-ebuild` | `gentoo-ebuild/` | 维护 Gentoo ebuild、overlay、eclass、Manifest、metadata、包评审或 ebuild QA。 | 先分类包维护任务，再按需读取细分 references；优先使用目标仓库规则和本地 Gentoo 证据，并用 `pkgdev`、`pkgcheck`、`ebuild` 等原生工具验证。 |
 | `$gentoo-maintenance` | `gentoo-maintenance/` | 处理 Portage 冲突、`@world` 升级、`/etc/portage` 清理、binpkg 取舍，或判断 Gentoo 本地规则应该放在哪里。 | 先判断主机角色和任务类型，区分本地偏好与生成规则，把候选 Portage 改动暂存到 `/tmp`，并在任何非 `/tmp` 写入前停下来给用户审。 |
 | `$locez-overlay-bump-workflow` | `locez-overlay-bump-workflow/` | 维护 `/home/locez/locez-overlay` 里的包，尤其是 bump、删除、或对齐 nvchecker 跟踪状态。 | 区分 release-managed、live-only、removed 包；让 nvchecker 自动化与包状态一致；对有意义的 ebuild 改动要求本地验证。 |
 | `$project-continuity` | `project-continuity/` | 不可用；仅作为历史归档保留。 | 不要用于实际工作。见[中文决策说明](docs/specs/2026-05-29-project-continuity-unavailable.zh-CN.md)。 |
@@ -27,6 +28,7 @@
 
 ## 应该先用哪个 Skill？
 
+- Gentoo ebuild、overlay、包 QA 或包评审：从 `$gentoo-ebuild` 开始。
 - Gentoo 系统维护：从 `$gentoo-maintenance` 开始。
 - `locez-overlay` 包 bump 或 nvchecker 工作：从 `$locez-overlay-bump-workflow` 开始。
 - `$project-continuity` 已不可用；不要再用它维护跨 session 的 durable project state。
@@ -37,6 +39,8 @@
 典型请求：
 
 ```text
+$gentoo-ebuild bump app-misc/example 到 1.2.3
+$gentoo-ebuild 检查 app-misc/example-1.2.3.ebuild 的 pkgcheck 和 eclass 问题
 $gentoo-maintenance 分析这次 @world slot conflict
 $gentoo-maintenance 帮我整理 package.accept_keywords
 $locez-overlay-bump-workflow 帮我 bump app-misc/example
@@ -60,6 +64,7 @@ $locez-lens 看看这个修复是不是框太窄了
 
 ```bash
 mkdir -p ~/.claude/skills
+ln -s ~/locez-skills/gentoo-ebuild ~/.claude/skills/gentoo-ebuild
 ln -s ~/locez-skills/gentoo-maintenance ~/.claude/skills/gentoo-maintenance
 ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.claude/skills/locez-overlay-bump-workflow
 ln -s ~/locez-skills/repo-visual-analysis ~/.claude/skills/repo-visual-analysis
@@ -70,6 +75,7 @@ ln -s ~/locez-skills/workflow-skill-architect ~/.claude/skills/workflow-skill-ar
 
 ```bash
 mkdir -p ~/.agents/skills
+ln -s ~/locez-skills/gentoo-ebuild ~/.agents/skills/gentoo-ebuild
 ln -s ~/locez-skills/gentoo-maintenance ~/.agents/skills/gentoo-maintenance
 ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.agents/skills/locez-overlay-bump-workflow
 ln -s ~/locez-skills/repo-visual-analysis ~/.agents/skills/repo-visual-analysis
@@ -87,6 +93,7 @@ OpenCode 示例：
 
 ```bash
 mkdir -p ~/.config/opencode/skills
+ln -s ~/locez-skills/gentoo-ebuild ~/.config/opencode/skills/gentoo-ebuild
 ln -s ~/locez-skills/gentoo-maintenance ~/.config/opencode/skills/gentoo-maintenance
 ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.config/opencode/skills/locez-overlay-bump-workflow
 ln -s ~/locez-skills/repo-visual-analysis ~/.config/opencode/skills/repo-visual-analysis
@@ -98,6 +105,7 @@ Hermes Agent 可以直接 symlink：
 
 ```bash
 mkdir -p ~/.hermes/skills
+ln -s ~/locez-skills/gentoo-ebuild ~/.hermes/skills/gentoo-ebuild
 ln -s ~/locez-skills/gentoo-maintenance ~/.hermes/skills/gentoo-maintenance
 ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.hermes/skills/locez-overlay-bump-workflow
 ln -s ~/locez-skills/repo-visual-analysis ~/.hermes/skills/repo-visual-analysis

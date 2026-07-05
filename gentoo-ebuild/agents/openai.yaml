@@ -1,0 +1,4 @@
+interface:
+  display_name: "Gentoo Ebuild"
+  short_description: "Maintain Gentoo ebuilds and overlays"
+  default_prompt: "Use $gentoo-ebuild to add, update, review, or QA a Gentoo ebuild."

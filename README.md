@@ -18,6 +18,7 @@ Deep dives from that guide:
 
 | Skill | Repository Path | Use When | What It Helps With |
 | --- | --- | --- | --- |
+| `$gentoo-ebuild` | `gentoo-ebuild/` | Working on Gentoo ebuilds, overlays, eclasses, Manifests, metadata, package reviews, or ebuild QA. | Classifies package-maintenance tasks, routes to focused references, prefers target repository policy and local Gentoo evidence, and validates with native tools such as `pkgdev`, `pkgcheck`, and `ebuild`. |
 | `$gentoo-maintenance` | `gentoo-maintenance/` | Handling Portage conflicts, `@world` upgrades, `/etc/portage` cleanup, binpkg tradeoffs, or local Gentoo policy placement. | Classifies host role and task type, separates local preferences from generated rules, stages candidate Portage changes under `/tmp`, and stops before non-`/tmp` writes. |
 | `$locez-overlay-bump-workflow` | `locez-overlay-bump-workflow/` | Maintaining packages in `/home/locez/locez-overlay`, especially bumping, removing, or reconciling nvchecker-tracked packages. | Distinguishes release-managed, live-only, and removed packages; keeps nvchecker automation aligned with package state; requires local ebuild verification for meaningful changes. |
 | `$project-continuity` | `project-continuity/` | Unavailable; retained only as an archive. | Do not use for active work. See [the decision record](docs/specs/2026-05-29-project-continuity-unavailable.md). |
@@ -27,6 +28,7 @@ Deep dives from that guide:
 
 ## Which Skill Should I Start With?
 
+- For Gentoo ebuild, overlay, package QA, or package review work, start with `$gentoo-ebuild`.
 - For Gentoo system maintenance, start with `$gentoo-maintenance`.
 - For `locez-overlay` package bump or nvchecker work, start with `$locez-overlay-bump-workflow`.
 - `$project-continuity` is unavailable; do not use it for durable project state across sessions.
@@ -37,6 +39,8 @@ Deep dives from that guide:
 Typical requests:
 
 ```text
+$gentoo-ebuild bump app-misc/example to 1.2.3
+$gentoo-ebuild review app-misc/example-1.2.3.ebuild for pkgcheck and eclass issues
 $gentoo-maintenance analyze this @world slot conflict
 $gentoo-maintenance help me clean package.accept_keywords
 $locez-overlay-bump-workflow bump app-misc/example
@@ -60,6 +64,7 @@ Most skills use the same repository directory and skill name. For example, insta
 
 ```bash
 mkdir -p ~/.claude/skills
+ln -s ~/locez-skills/gentoo-ebuild ~/.claude/skills/gentoo-ebuild
 ln -s ~/locez-skills/gentoo-maintenance ~/.claude/skills/gentoo-maintenance
 ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.claude/skills/locez-overlay-bump-workflow
 ln -s ~/locez-skills/repo-visual-analysis ~/.claude/skills/repo-visual-analysis
@@ -70,6 +75,7 @@ Install into the shared Agent Skills directory used by Codex-style runtimes:
 
 ```bash
 mkdir -p ~/.agents/skills
+ln -s ~/locez-skills/gentoo-ebuild ~/.agents/skills/gentoo-ebuild
 ln -s ~/locez-skills/gentoo-maintenance ~/.agents/skills/gentoo-maintenance
 ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.agents/skills/locez-overlay-bump-workflow
 ln -s ~/locez-skills/repo-visual-analysis ~/.agents/skills/repo-visual-analysis
@@ -87,6 +93,7 @@ For OpenCode:
 
 ```bash
 mkdir -p ~/.config/opencode/skills
+ln -s ~/locez-skills/gentoo-ebuild ~/.config/opencode/skills/gentoo-ebuild
 ln -s ~/locez-skills/gentoo-maintenance ~/.config/opencode/skills/gentoo-maintenance
 ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.config/opencode/skills/locez-overlay-bump-workflow
 ln -s ~/locez-skills/repo-visual-analysis ~/.config/opencode/skills/repo-visual-analysis
@@ -98,6 +105,7 @@ For Hermes Agent, either symlink directly:
 
 ```bash
 mkdir -p ~/.hermes/skills
+ln -s ~/locez-skills/gentoo-ebuild ~/.hermes/skills/gentoo-ebuild
 ln -s ~/locez-skills/gentoo-maintenance ~/.hermes/skills/gentoo-maintenance
 ln -s ~/locez-skills/locez-overlay-bump-workflow ~/.hermes/skills/locez-overlay-bump-workflow
 ln -s ~/locez-skills/repo-visual-analysis ~/.hermes/skills/repo-visual-analysis
