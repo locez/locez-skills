@@ -21,12 +21,13 @@ If any item is missing, try to discover it before asking the user. Do not rely o
 3. Search for similar ebuilds in the same language/build system.
 4. Run eclass discovery and write a short eclass decision record.
 5. Draft `category/package/package-version.ebuild` using existing package style.
-6. Draft or update `metadata.xml`.
-7. Add files under `files/` only when patches, init scripts, service files, wrappers, or desktop integration cannot be generated cleanly in phases.
-8. Check repository nvchecker coverage when the repository has `.github/workflows/overlay.toml`.
-9. Run `scripts/ensure_copyright_year.py --fix` on the new ebuild.
-10. Generate `Manifest` with `pkgdev manifest`.
-11. Run package-level QA, then commit-level QA if preparing a PR.
+6. Audit dependencies before treating the draft as ready.
+7. Draft or update `metadata.xml`.
+8. Add files under `files/` only when patches, init scripts, service files, wrappers, or desktop integration cannot be generated cleanly in phases.
+9. Check repository nvchecker coverage when the repository has `.github/workflows/overlay.toml`.
+10. Run `scripts/ensure_copyright_year.py --fix` on the new ebuild.
+11. Generate `Manifest` with `pkgdev manifest`.
+12. Run package-level QA, then commit-level QA if preparing a PR.
 
 Read-only searches in steps 2-4 can run in parallel. Drafting files, Manifest generation, and QA reruns stay serial.
 
@@ -40,6 +41,17 @@ Read-only searches in steps 2-4 can run in parallel. Drafting files, Manifest ge
 - Do not invent licenses. Verify upstream license files and Gentoo license names.
 - For bundled binaries, verify architecture, redistribution constraints, install paths, and whether `strip` or QA exceptions are needed.
 - Prefer normal phase functions and existing eclasses over generated wrappers or custom helper scripts.
+
+## Dependency Audit
+
+Do not add dependencies defensively. Every `DEPEND`, `RDEPEND`, `BDEPEND`, test dependency, and optional dependency must have a concrete reason from upstream build files, source imports/linkage, installed runtime behavior, enabled features, eclass requirements, or same-package precedent.
+
+- Classify each dependency as build-time, runtime, test-only, optional feature/plugin, or eclass/tooling requirement before placing it in `DEPEND`, `RDEPEND`, `BDEPEND`, or a USE-conditional branch.
+- Do not copy dependencies from upstream packaging, generated metadata, distribution packages, old ebuilds, or similar packages without checking that the new ebuild actually uses each one.
+- Do not declare transitive dependencies unless the package directly imports, links, executes, loads, or otherwise requires them, or repository/Gentoo policy requires explicit declaration.
+- Keep optional integrations behind matching USE flags when they are supported; otherwise omit dependencies for disabled features instead of enabling extra functionality accidentally.
+- Treat test-only dependencies separately from build/runtime dependencies, and do not add them when tests are disabled or cannot be run unless repository policy requires them.
+- If a dependency cannot be justified after checking upstream evidence and local precedent, leave it out or stop and ask with the evidence instead of padding the dependency list.
 
 ## Nvchecker Coverage
 

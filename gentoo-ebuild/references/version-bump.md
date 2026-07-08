@@ -28,6 +28,7 @@
 
 - Copy the selected old ebuild to the new version first, usually `cp old.ebuild new.ebuild`, unless repository tooling or package history clearly suggests another approach.
 - Update `SRC_URI`, checksums through `pkgdev manifest`, and any version-specific variables.
+- Audit dependencies instead of carrying them forward blindly. Compare upstream build files, release notes, source imports/linkage, enabled features, and existing ebuild history; keep, add, move, or remove each dependency only when there is evidence that the new ebuild needs it.
 - Run `scripts/ensure_copyright_year.py --fix` on edited ebuild/eclass files before Manifest/QA.
 - Check repository nvchecker coverage when `.github/workflows/overlay.toml` exists. If the package has no entry, propose a candidate only when the source is obvious; do not auto-edit the file without user or repository direction.
 - Keep old versions in place while validating the new ebuild.
@@ -72,6 +73,7 @@ Use repository-required commands. Regenerate Manifest when distfiles change. If 
 ## Common Bump Risks
 
 - Upstream changed build system or dependency names.
+- Copied ebuilds can retain stale or unnecessary dependencies; verify each dependency is still directly required by the new version.
 - Source archive layout changed, requiring `S=`.
 - License changed.
 - Vendored dependencies changed.
