@@ -46,6 +46,30 @@ program is not automatically a reason to inherit `qt6-build`.
 6. Run mechanical validation after the semantic draft: copyright helper,
    Manifest, package QA, and build/install checks where feasible.
 
+## Inherit Dependency Contract
+
+Gentoo `inherit` is not an ordinary Bash variable-override operation. During
+inherit processing, Portage temporarily preserves the ebuild's package-owned
+`DEPEND`, `RDEPEND`, `BDEPEND`, and related values, evaluates the eclass, and
+collects eclass assignments in accumulation channels such as `E_DEPEND`,
+`E_RDEPEND`, and `E_BDEPEND`. After inherit processing, Portage appends those
+channels to the final dependency metadata.
+
+Generate dependencies with this ownership boundary:
+
+- Declare only package-owned direct dependencies in the ebuild. Let the
+  eclass contribute its own toolchain, implementation, or backend dependencies.
+- Do not manually add an eclass-owned output such as `${PYTHON_DEPS}` when the
+  selected eclass already adds it for the current mode. Use the eclass's
+  documented opt-out or customization variable when one exists.
+- Do not write `BDEPEND="${BDEPEND}"` or an equivalent self-assignment to
+  preserve eclass dependencies. Immediately after `inherit`, ordinary
+  `BDEPEND` is not the `E_BDEPEND` accumulation channel; the final dependency
+  is complete because Portage appends the accumulated channel later.
+- If an eclass has an optional mode that disables its automatic dependencies or
+  exported phases, treat that mode as an explicit exception and provide the
+  dependencies and helper calls required by its contract.
+
 ## Recommendation Levels
 
 Use precise language so defaults do not become cargo cult:

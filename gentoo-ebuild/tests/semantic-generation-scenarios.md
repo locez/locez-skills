@@ -128,6 +128,24 @@ and `tc-get*` as appropriate. Raw `cp`, image-tree `mkdir`, `chmod`,
 source/eclass reason. Required commands must fail with `die`; failures must
 not be hidden with `|| true`.
 
+### Portage eclass dependency accumulation
+
+Input profile: an eclass sets dependency variables during `inherit`, while
+the ebuild also declares its own `DEPEND`, `RDEPEND`, or `BDEPEND`. A Python
+distribution uses `DISTUTILS_EXT=1` and `distutils-r1` as a concrete example.
+
+The old skill said to let eclasses own dependencies but did not explain the
+mechanism. An agent could therefore add `${PYTHON_DEPS}` to `DEPEND` even when
+`distutils-r1` already supplies it, or write `BDEPEND="${BDEPEND}"` after
+`inherit` believing that it preserves eclass dependencies.
+
+The expected rule is that `inherit` evaluates eclass metadata into Portage's
+accumulation channels such as `E_DEPEND`, `E_RDEPEND`, and `E_BDEPEND`; Portage
+appends those channels to the ebuild's final dependency variables after
+inherit processing. Ebuild code should declare only package-owned additions,
+avoid duplicating eclass-owned dependencies, and avoid replacing generated
+dependency variables without reading the eclass contract.
+
 ### Java upstream build fallback
 
 Input profile: a pure-Java release ships a Gradle or Maven build, does not
@@ -183,6 +201,8 @@ following before editing an ebuild:
 9. A mechanical validation sequence that does not make semantic decisions.
 10. A source-mode or ABI branch whose phase contract is explicit when the
     profile requires one.
+11. An explicit distinction between package-owned dependency additions and
+    dependencies accumulated by inherited eclasses.
 
 The agent must preserve release/live separation, call inherited phase helpers
 when overriding exported phases, and avoid blanket test or QA suppression
@@ -199,6 +219,9 @@ clarifying rule:
 - A custom phase duplicates behavior owned by an eclass helper.
 - A generated ebuild uses `cp`, `chmod`, or hard-coded compiler/build commands
   where a Portage/eclass helper owns the operation.
+- A generated ebuild manually adds an eclass-owned dependency or treats
+  `BDEPEND="${BDEPEND}"` as a way to preserve Portage's accumulated eclass
+  dependencies.
 - A copied dependency list is justified only by a similar package.
 - A release ebuild reuses live source logic or deletes `9999` as cleanup.
 - `pkgcheck` or a helper script is treated as the authority for eclass or

@@ -23,6 +23,11 @@ Use this as the entry point for Gentoo package maintenance. Classify the task, l
 - Prefer existing package style and nearby precedent over generic templates.
 - Treat ebuild editing as semantic code generation: infer source/build/runtime signals, select the normal eclass contract, generate its standard phase shape, and explain only evidenced deviations.
 - Prefer Portage/eclass helpers for install, permissions, patches, toolchain, version, and phase operations; use raw shell primitives only for source-specific exceptions.
+- Treat eclass dependencies as Portage accumulation, not ordinary Bash variable
+  overwrites: `inherit` collects eclass assignments in `E_DEPEND`, `E_RDEPEND`,
+  `E_BDEPEND`, and related channels before appending them to the final metadata.
+  Do not duplicate eclass-owned dependencies or use `BDEPEND="${BDEPEND}"` as
+  a preservation mechanism.
 - Use native tools directly: `pkgdev`, `pkgcheck`, `ebuild`, `emerge`, `git`, `gh`, `nvchecker` when relevant.
 - Use bundled scripts only for narrow deterministic lint/fix work they explicitly own.
 - Never choose eclasses from memory alone; verify from local Gentoo tree or official Gentoo sources.

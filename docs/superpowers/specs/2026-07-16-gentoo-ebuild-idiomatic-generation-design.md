@@ -74,6 +74,13 @@ For every non-trivial ebuild edit:
    mechanical validation. These tools must not be treated as the source of
    semantic packaging decisions.
 
+Eclass dependency generation follows Portage's accumulation contract: eclass
+assignments are collected in `E_*` channels during `inherit` and appended to
+the final dependency metadata after inherit processing. Generated ebuilds
+must keep package-owned dependencies separate, avoid duplicating eclass-owned
+outputs, and must not use `BDEPEND="${BDEPEND}"` as a substitute for that
+mechanism.
+
 The generated ebuild should prefer eclass-owned behavior over hand-written
 equivalents, direct dependencies over copied transitive dependencies, narrow
 test restrictions over blanket disabling, and root-cause fixes over QA
@@ -142,6 +149,9 @@ turning frequency into an unconditional rule:
   eclass by association.
 - An install or build operation uses the matching Portage/eclass helper before
   falling back to raw `cp`, `chmod`, `./configure`, or `make`.
+- An ebuild using an eclass-owned dependency contract adds only its own direct
+  dependencies and relies on Portage's `E_*` accumulation instead of manually
+  copying `${PYTHON_DEPS}` or self-assigning `BDEPEND`.
 - A mined lesson that appears once, contains a package-specific workaround,
   or conflicts with the current eclass contract is not promoted to a default.
 

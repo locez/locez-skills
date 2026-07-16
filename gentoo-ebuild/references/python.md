@@ -35,6 +35,21 @@ inherit distutils-r1 pypi
 The exact `PYTHON_COMPAT` range, backend value, `S`, license, and keywords
 still come from the target source and repository policy.
 
+## Dependency Ownership
+
+`distutils-r1` contributes Python implementation, backend, and build
+dependencies through the Portage eclass accumulation mechanism. In
+particular, `DISTUTILS_EXT=1` makes the eclass contribute `${PYTHON_DEPS}` to
+`DEPEND`, while the eclass also contributes its normal Python/backend
+requirements to `BDEPEND` and `RDEPEND`. Do not add `${PYTHON_DEPS}` manually
+just because the package builds an extension, and do not use
+`BDEPEND="${BDEPEND}"` after `inherit` to preserve eclass dependencies; that
+does not refer to Portage's `E_BDEPEND` channel.
+
+`DISTUTILS_OPTIONAL` is an explicit exception: it disables the eclass's
+automatic dependency and phase behavior, so the ebuild must provide the
+documented dependencies and call the required helpers itself.
+
 ## PEP 517 Backend Preference
 
 Read `[build-system] build-backend` and its `requires` from

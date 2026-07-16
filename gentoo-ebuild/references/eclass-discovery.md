@@ -73,6 +73,10 @@ Eclass decision:
 - When overriding a phase, call the eclass helper at the documented point;
   do not silently replace dependency setup, source preparation, or install
   behavior.
+- Remember that `inherit` accumulates eclass dependency assignments through
+  Portage's `E_*` channels and appends them to final metadata later. Do not
+  mirror those dependencies manually or treat a post-inherit
+  `BDEPEND="${BDEPEND}"` assignment as access to `E_BDEPEND`.
 - Add a helper/integration eclass only when a concrete function, variable,
   installed file, or package contract requires it.
 - Prefer the eclass/Portage helper for the generated operation (`doins`,

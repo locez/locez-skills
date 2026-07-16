@@ -71,8 +71,10 @@
   Cover eclass-owned phases, variables-before-inherit contracts, phase-chain
   preservation, direct dependency classification, minimal custom phases,
   selective test handling, root-cause fixes, no blanket QA suppression, and
-  Gentoo shell helpers for install/patch/build/toolchain operations. Explicitly
-  say scripts validate mechanics and do not choose semantics.
+  Gentoo shell helpers for install/patch/build/toolchain operations. Document
+  Portage's `E_*` dependency accumulation so generated ebuilds do not duplicate
+  eclass-owned outputs or use `BDEPEND="${BDEPEND}"` to preserve them.
+  Explicitly say scripts validate mechanics and do not choose semantics.
 
 ### Task 3: Add domain routing and default eclass choices
 
