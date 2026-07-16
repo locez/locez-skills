@@ -14,7 +14,7 @@ Use this as the entry point for Gentoo package maintenance. Classify the task, l
 1. Read local policy first: `AGENTS.md`, `README*`, `CONTRIBUTING*`, PR templates, and CI config.
 2. Classify the request before editing: new package, version bump, revision update, QA/review fix, eclass decision, commit/PR prep, or mixed task.
 3. For any non-trivial package edit, read `references/workflow.md` before task-specific references.
-4. Infer the package profile before generating eclass, dependency, or phase code. Read `references/semantic-generation.md` and `references/domain-routing.md`, then load only the matching domain references.
+4. Infer the package profile before generating eclass, dependency, or phase code. Read `references/semantic-generation.md`, `references/domain-routing.md`, and `references/shell-idioms.md`, then load only the matching domain references.
 5. Keep workflow notes lightweight. Do not create persistent package-profile or lesson records.
 
 ## Core Rules
@@ -22,6 +22,7 @@ Use this as the entry point for Gentoo package maintenance. Classify the task, l
 - Target repository policy overrides generic guidance here.
 - Prefer existing package style and nearby precedent over generic templates.
 - Treat ebuild editing as semantic code generation: infer source/build/runtime signals, select the normal eclass contract, generate its standard phase shape, and explain only evidenced deviations.
+- Prefer Portage/eclass helpers for install, permissions, patches, toolchain, version, and phase operations; use raw shell primitives only for source-specific exceptions.
 - Use native tools directly: `pkgdev`, `pkgcheck`, `ebuild`, `emerge`, `git`, `gh`, `nvchecker` when relevant.
 - Use bundled scripts only for narrow deterministic lint/fix work they explicitly own.
 - Never choose eclasses from memory alone; verify from local Gentoo tree or official Gentoo sources.
@@ -32,7 +33,7 @@ Use this as the entry point for Gentoo package maintenance. Classify the task, l
 ## Task Routing
 
 - Mixed tasks or non-trivial package edits: read `references/workflow.md` first.
-- Package profile and semantic skeleton: read `references/semantic-generation.md` and `references/domain-routing.md`.
+- Package profile and semantic skeleton: read `references/semantic-generation.md`, `references/domain-routing.md`, and `references/shell-idioms.md`.
 - New package: read `references/new-package.md`.
 - Version bump or revision update: read `references/version-bump.md`.
 - Eclass choice, phase behavior, or helper question: read `references/eclass-discovery.md`.

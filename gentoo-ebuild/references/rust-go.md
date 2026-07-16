@@ -25,8 +25,21 @@ Use `go-module` when the top-level source has `go.mod`. Prefer a dependency
 tarball for non-vendored release modules according to the current eclass
 documentation; `EGO_SUM` is a legacy/deprecated mode in the current tree.
 When `go-module` is inherited, let it verify modules and establish the offline
-module environment. If an ebuild owns `src_unpack`, call the required
-`go-module_setup_proxy`/related helper exactly as the eclass contract says.
+module environment.
+
+Choose the source branch explicitly:
+
+| Source signal | Default shape | Exception boundary |
+| --- | --- | --- |
+| Release archive contains `vendor/` | `inherit go-module`; keep the eclass `src_unpack` path | Do not add a dependency tarball or run a second vendoring step |
+| Release archive lacks `vendor/` | Add the eclass dependency tarball and keep `go-module_src_unpack` as the unpack path | Do not let `go` download modules during build |
+| Live source lacks `vendor/` | `git-r3_src_unpack`, then `go-module_live_vendor` in `src_unpack` | `go-module_live_vendor` is only for live ebuilds and only before build phases |
+| Existing ebuild still uses `EGO_SUM` | Treat it as migration debt; call `go-module_set_globals` in global scope and use the eclass proxy path | If custom `src_unpack` is unavoidable, call `go-module_setup_proxy` exactly as documented; do not introduce this mode for a new ebuild |
+
+If a custom `src_unpack` is needed for signatures or live/release branching,
+call `go-module_src_unpack` for the release branch unless the eclass contract
+requires the legacy proxy helper directly. Do not confuse
+`go-module_setup_proxy` with the normal dependency-tarball path.
 
 Go binaries are often statically linked. Inspect and include the licenses of
 statically linked dependencies; do not assume the main project's license is
@@ -38,4 +51,3 @@ Stop and inspect more evidence when the source mixes Cargo and Go, uses a
 workspace with several installable targets, vendors only part of its graph,
 requires generated code, or uses live git dependencies. Do not invent a
 generic Rust/Go wrapper or copy another package's module list.
-

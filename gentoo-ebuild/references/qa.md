@@ -8,6 +8,8 @@ Classify the issue:
 - Manifest/distfiles: checksum, stale files, mirror restrictions.
 - Ebuild style: EAPI, variable ordering, quoting, phases, obsolete eclasses.
 - Semantic skeleton: wrong eclass for the detected build model, missing eclass helper call, copied live/release behavior, or integration eclass without matching installed files.
+- Gentoo shell idiom: raw install/permission/build commands that bypass a
+  matching Portage or eclass helper, or swallowed command failures.
 - Dependency: missing, invalid USE deps, circular, wrong `BDEPEND`/`RDEPEND`.
 - Runtime/install: wrong paths, missing files, QA prestripped/bundled libs, desktop/icon/cache handling.
 - Keywording: unsupported stable keywords, untested arches.

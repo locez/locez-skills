@@ -22,11 +22,12 @@ The missing dimension is package shape:
 - operation: new package, bump, revision, live update, QA/review;
 - artifact mode: release source, live source, prebuilt/binary;
 - ecosystem and build system: Python, C/C++, Rust, Go, Java, Perl, CMake,
-  Meson, Autotools, and related native systems;
+  Meson, Autotools, PEP 517 backend, and related native systems;
 - runtime role: library, executable, plugin, service, kernel module, desktop
   integration, or build-only tool;
-- integration and portability: systemd, udev, multilib, ABI, implementation
-  selection, and optional features;
+- integration and portability: systemd, udev, Qt/GNOME/KDE, desktop files,
+  icons, MIME/GSettings data, display-dependent tests, multilib, ABI,
+  implementation selection, and optional features;
 - test mode: enabled, selectively disabled, or restricted with a reason.
 
 These fields are transient reasoning inputs. They are not persisted as package
@@ -76,16 +77,19 @@ For every non-trivial ebuild edit:
 The generated ebuild should prefer eclass-owned behavior over hand-written
 equivalents, direct dependencies over copied transitive dependencies, narrow
 test restrictions over blanket disabling, and root-cause fixes over QA
-suppression.
+suppression. It should also prefer Portage/eclass shell helpers such as
+`doins`, `dobin`, `fperms`, `eapply`, `econf`, `emake`, and `tc-get*` over raw
+`cp`, `chmod`, `./configure`, `make`, or hard-coded tool names. Raw shell is
+allowed for source-specific work when the matching helper does not own it.
 
 ## Initial Domain Coverage
 
 The first references should encode these stable defaults and their exception
 signals:
 
-- Python distributions: `distutils-r1`, `pypi`, PEP 517 selection,
-  extensions, and the distinction between `python-r1`, `python-single-r1`,
-  and `python-any-r1`.
+- Python distributions: `distutils-r1`, `pypi`, backend-specific PEP 517
+  selection, extensions, and the distinction between `python-r1`,
+  `python-single-r1`, and `python-any-r1`.
 - Native builds: `cmake`, `meson`, and `autotools`, including standard phase
   helpers and the boundary between build-system behavior and package-specific
   arguments.
@@ -93,8 +97,13 @@ signals:
   layout decisions owned by the eclass.
 - Java and Perl: `java-pkg-2`, `java-pkg-simple`, and `perl-module` based on
   the actual build model rather than language-name matching alone.
+- GUI and desktop packages: toolkit versus build owner, Qt/GNOME/KDE/ECM,
+  `desktop`, `xdg`, `virtualx`, desktop files, icons, and optional display
+  features.
 - Package modes and integrations: release versus live, source versus
   prebuilt, systemd/udev, multilib, ABI, and service or desktop installation.
+- Gentoo shell idioms: Portage install/permission/patch/build/toolchain
+  helpers and the boundary for raw shell commands.
 
 ## Pressure Scenarios
 
@@ -116,7 +125,23 @@ turning frequency into an unconditional rule:
   separate from release distfile handling.
 - A Java package with a real upstream build system is not reduced to
   `java-pkg-simple`; the simple eclass is selected only when its stated input
-  model matches.
+  model matches. When no generic Gradle/Maven eclass applies, the generated
+  shape keeps the upstream build command offline and installs the resulting
+  artifact with Java helpers.
+- A Go release with vendored modules, a release with a dependency tarball, a
+  live source requiring `go-module_live_vendor`, and a legacy `EGO_SUM`
+  package select distinct source/unpack branches.
+- A real multilib package inherits `multilib-minimal` last and generates
+  `multilib_src_*` plus `multilib_src_install_all` phases rather than a manual
+  ABI loop.
+- A Python project with `hatchling`, `poetry-core`, `meson-python`, or another
+  declared backend selects the matching `DISTUTILS_USE_PEP517` key rather than
+  defaulting to `setuptools`.
+- A GUI application separates toolkit, primary build system, desktop/XDG
+  integration, and display-dependent tests instead of inheriting every GUI
+  eclass by association.
+- An install or build operation uses the matching Portage/eclass helper before
+  falling back to raw `cp`, `chmod`, `./configure`, or `make`.
 - A mined lesson that appears once, contains a package-specific workaround,
   or conflicts with the current eclass contract is not promoted to a default.
 
@@ -137,4 +162,3 @@ turning frequency into an unconditional rule:
 - Add focused domain references only for the initial coverage above.
 - Update `eclass-discovery.md` so an eclass decision includes the generated
   skeleton and exception conditions.
-

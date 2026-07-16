@@ -55,7 +55,9 @@ pkg_postrm() {
 
 Only include the functions that correspond to installed files. If upstream
 already installs a unit or rule correctly, verify the image before duplicating
-it in the ebuild.
+it in the ebuild. For hwdb files, keep the same `udev` ownership but use
+`udev_hwdb_update` in `pkg_postinst` and `pkg_postrm` in addition to any
+required `udev_reload`; `udev_reload` alone does not rebuild the hwdb binary.
 
 ## Multilib And ABI
 
@@ -63,4 +65,9 @@ Use a multilib eclass only when the package has a real multi-ABI build/install
 model and current package precedent supports it. Identify whether the package
 is a library, plugin, executable, or mixed output before choosing. Do not add
 `multilib-minimal` because it is common in a language/build-system family.
-Keep ABI-sensitive dependencies and install paths explicit.
+When `multilib-minimal` is the chosen contract, inherit it last, implement
+ABI-specific work in `multilib_src_configure`, `multilib_src_compile`,
+`multilib_src_test`, and `multilib_src_install`, and put shared output in
+`multilib_src_install_all`. For in-source builds, follow the eclass contract
+for `multilib_copy_sources` and `ECONF_SOURCE` instead of inventing a second
+ABI loop. Keep ABI-sensitive dependencies and install paths explicit.

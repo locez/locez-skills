@@ -4,7 +4,7 @@
 
 **Goal:** Extend `gentoo-ebuild` so ebuild generation follows evidence-backed Gentoo defaults for a package profile while keeping scripts limited to mechanical validation.
 
-**Architecture:** Keep `SKILL.md` as a short orchestrator. Add one reference for cross-cutting semantic preferences, one reference for profile routing, and focused references for Python, native builds, Rust/Go, Java/Perl, and release/live/binary modes. Update eclass discovery so every eclass choice produces a generated skeleton and an exception condition. Keep package-specific evidence and repository policy authoritative.
+**Architecture:** Keep `SKILL.md` as a short orchestrator. Add references for cross-cutting semantic preferences, profile routing, Gentoo shell idioms, and focused references for Python, native builds, Rust/Go, Java/Perl, GUI/desktop, and release/live/binary modes. Update eclass discovery so every eclass choice produces a generated skeleton and an exception condition. Keep package-specific evidence and repository policy authoritative.
 
 **Tech Stack:** Markdown skill references, existing Python copyright helper, `quick_validate.py`, `unittest`, `rg`, `git diff --check`; no new semantic scripts or package database.
 
@@ -53,8 +53,9 @@
 - [ ] **Step 2: Define the profile-to-skeleton protocol**
 
   In `semantic-generation.md`, document the transient profile fields:
-  operation, artifact mode, ecosystem/build system, runtime role, integrations,
-  ABI/implementation selection, and test mode. Define the sequence:
+  operation, artifact mode, ecosystem/build system/backend, runtime role,
+  desktop/toolkit integrations, ABI/implementation selection, and test mode.
+  Define the sequence:
   inspect signals, choose eclass contract, generate standard skeleton, add
   only evidenced overrides, then mechanically validate.
 
@@ -69,8 +70,9 @@
 
   Cover eclass-owned phases, variables-before-inherit contracts, phase-chain
   preservation, direct dependency classification, minimal custom phases,
-  selective test handling, root-cause fixes, and no blanket QA suppression.
-  Explicitly say scripts validate mechanics and do not choose semantics.
+  selective test handling, root-cause fixes, no blanket QA suppression, and
+  Gentoo shell helpers for install/patch/build/toolchain operations. Explicitly
+  say scripts validate mechanics and do not choose semantics.
 
 ### Task 3: Add domain routing and default eclass choices
 
@@ -80,6 +82,8 @@
 - Create: `gentoo-ebuild/references/native-builds.md`
 - Create: `gentoo-ebuild/references/rust-go.md`
 - Create: `gentoo-ebuild/references/java-perl.md`
+- Create: `gentoo-ebuild/references/gui-desktop.md`
+- Create: `gentoo-ebuild/references/shell-idioms.md`
 
 - [ ] **Step 1: Build a signal-to-domain matrix**
 
@@ -89,14 +93,18 @@
   live git sources; prebuilt archives; services and udev rules. State that
   build-system signals outrank language-name guesses.
 
-- [ ] **Step 2: Document Python defaults and exceptions**
+- [ ] **Step 2: Document Python backend preferences and exceptions**
 
   Prefer `distutils-r1` for Python distribution lifecycle behavior and `pypi`
-  for PyPI release source handling when the source matches. Require
-  `DISTUTILS_USE_PEP517` before inherit when needed and `DISTUTILS_EXT=1` for
-  extension modules. Choose `python-any-r1`, `python-single-r1`, or
-  `python-r1` from runtime/implementation semantics, not popularity. Require
-  eclass helper calls when overriding phases.
+  for PyPI release source handling when the source matches. Map the declared
+  PEP 517 backend to `setuptools`, `flit-core`, `flit-scm`, `hatchling`,
+  `jupyter-packaging`, `poetry-core`, `pdm-backend`, `meson-python`,
+  `scikit-build-core`, `maturin`, `sip`, `pbr`, or `uv-build` instead of
+  choosing by popularity.
+  Require `DISTUTILS_USE_PEP517` before inherit when needed and
+  `DISTUTILS_EXT=1` for extension modules. Choose `python-any-r1`,
+  `python-single-r1`, or `python-r1` from runtime/implementation semantics.
+  Require eclass helper calls when overriding phases.
 
 - [ ] **Step 3: Document native build defaults and exceptions**
 
@@ -108,19 +116,51 @@
 - [ ] **Step 4: Document Rust and Go defaults**
 
   Use `cargo` or `go-module` when module metadata and source layout match the
-  eclass contract. Let the eclass own vendoring/module layout and dependency
-  setup. Treat custom vendoring, generated code, and network access as
-  evidence-driven exceptions.
+  eclass contract. Distinguish vendored releases, dependency tarballs, live
+  `go-module_live_vendor`, and legacy `EGO_SUM`/proxy handling. Let the eclass
+  own vendoring/module layout and dependency setup. Treat custom vendoring,
+  generated code, and network access as evidence-driven exceptions.
 
 - [ ] **Step 5: Document Java and Perl boundaries**
 
   Treat Java as ecosystem context and Gradle/Maven/Ant or simple sources as
   the build-model signal. Use `java-pkg-simple` only for its simple-source
   model; retain the upstream build system when that is the package behavior.
-  Use `perl-module` for Perl module distributions when its build model fits;
-  do not infer dependencies from a sibling package.
+  When no generic upstream-build eclass applies, generate a `java-pkg-2`
+  plus verified offline build-command and `java-pkg_dojar`/`java-pkg_dowar`
+  install skeleton. Use `perl-module` for Perl module distributions when its
+  build model fits; do not infer dependencies from a sibling package.
 
-### Task 4: Add package-mode and integration preferences
+- [ ] **Step 6: Document GUI/desktop routing**
+
+  Create `gui-desktop.md` to separate toolkit, primary build system, desktop
+  files/icons/MIME/GSettings integration, and display-dependent tests. Cover
+  `ecm`, `qt5-build`/`qt6-build`, `qmake-utils`, `gnome2`, `desktop`, `xdg`,
+  and `virtualx` only under their actual contracts.
+
+### Task 4: Add Gentoo shell idioms
+
+**Files:**
+- Create: `gentoo-ebuild/references/shell-idioms.md`
+- Modify: `gentoo-ebuild/SKILL.md`
+- Modify: `gentoo-ebuild/references/semantic-generation.md`
+- Modify: `gentoo-ebuild/references/eclass-discovery.md`
+
+- [ ] **Step 1: Map common operations to native helpers**
+
+  Prefer `doins`/`newins`, `dobin`/`doexe`, `dodoc`/`doman`/`doicon`,
+  `fperms`/`fowners`, `eapply`, `econf`/`emake`, `tc-get*`, version/USE
+  helpers, and integration helpers over raw `cp`, `chmod`, `./configure`,
+  `make`, or hard-coded compiler/path commands.
+
+- [ ] **Step 2: Define raw-shell exceptions**
+
+  Allow raw shell for source-tree transforms, generated files, or documented
+  eclass gaps only when the correct phase/path variables and failure handling
+  are explicit. Require `die` for required failures and forbid silent
+  `|| true` suppression.
+
+### Task 5: Add package-mode and integration preferences
 
 **Files:**
 - Create: `gentoo-ebuild/references/package-modes.md`
@@ -138,7 +178,9 @@
   For `-bin` or other prebuilt packages, route through architecture, bundled
   library, RPATH, install-path, redistribution, and QA checks. Add `systemd`
   or `udev` behavior only when the package actually installs the corresponding
-  files. Treat multilib/ABI as a profile signal, not a popularity rule.
+  files; use `udev_hwdb_update` for hwdb data. Treat multilib/ABI as a profile
+  signal, not a popularity rule, and generate `multilib_src_*` plus
+  `multilib_src_install_all` under the `multilib-minimal`-last contract.
 
 - [ ] **Step 3: Extend eclass decision records**
 
@@ -147,7 +189,7 @@
   alternatives, exception trigger, and remaining uncertainty. Keep it as
   working notes or final-report content rather than a persistent database.
 
-### Task 5: Integrate with existing task references
+### Task 6: Integrate with existing task references
 
 **Files:**
 - Modify: `gentoo-ebuild/references/workflow.md`
@@ -173,7 +215,7 @@
   Preserve the copyright helper and native commands, but state that they only
   validate or repair deterministic mechanics after semantic generation.
 
-### Task 6: Verify and refactor
+### Task 7: Verify and refactor
 
 **Files:**
 - Verify: `gentoo-ebuild/SKILL.md`
@@ -185,7 +227,7 @@
   Run:
 
   ```bash
-  python3 /home/locez/.codex/skills/.system/skill-creator/scripts/quick_validate.py gentoo-ebuild
+  python3 <skill-creator-root>/scripts/quick_validate.py gentoo-ebuild
   python3 -m unittest discover -s gentoo-ebuild/scripts -p 'test_*.py'
   git diff --check
   ```
@@ -212,4 +254,3 @@
   Report exact commands and results. Explicitly note that semantic compliance
   was reviewed against the pressure scenarios, while actual package builds
   were not run because this change edits the skill rather than a package.
-

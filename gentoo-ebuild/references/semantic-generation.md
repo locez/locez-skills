@@ -1,9 +1,10 @@
 # Semantic Ebuild Generation
 
 Use this reference before writing a non-trivial ebuild. It describes the
-semantic decisions that produce the ebuild; `pkgdev`, `pkgcheck`, `ebuild`, and
-the bundled copyright helper only validate or repair deterministic mechanics
-after those decisions.
+semantic decisions that produce the ebuild; `shell-idioms.md` describes the
+Gentoo Bash/Portage primitives used to express those decisions. `pkgdev`,
+`pkgcheck`, `ebuild`, and the bundled copyright helper only validate or repair
+deterministic mechanics after the decisions.
 
 ## Package Profile
 
@@ -13,17 +14,19 @@ record. Capture only fields that affect the generated ebuild:
 - operation: new package, release bump, revision, live update, or QA fix;
 - artifact mode: release source, live source, prebuilt/binary, or generated
   source;
-- ecosystem and build system: Python/PEP 517, CMake, Meson, Autotools, Rust,
-  Go, Java, Perl, or another detected model;
+- ecosystem and build system: Python/PEP 517 backend, CMake, Meson, Autotools,
+  Rust, Go, Java, Perl, or another detected model;
 - runtime role: library, executable, module, plugin, service, kernel module,
   desktop integration, or build-only tool;
-- integration and portability: systemd, udev, multilib, ABI, implementation
-  selection, optional features, and installed paths;
+- integration and portability: systemd, udev, Qt/GNOME/KDE/desktop files,
+  X/Wayland test display, multilib, ABI, implementation selection, optional
+  features, and installed paths;
 - test mode: runnable, selectively restricted, or unavailable with a reason.
 
 The build model and installed behavior outrank the language name. For example,
-Java plus Gradle is not automatically a `java-pkg-simple` package, and a C++
-program is not automatically a reason to inherit a helper eclass.
+the declared PEP 517 backend controls the Python build choice, Java plus
+Gradle is not automatically a `java-pkg-simple` package, and a C++ desktop
+program is not automatically a reason to inherit `qt6-build`.
 
 ## Generation Sequence
 
@@ -32,8 +35,8 @@ program is not automatically a reason to inherit a helper eclass.
 2. Match the profile to a domain reference and choose the eclass that owns the
    relevant lifecycle behavior.
 3. Generate the standard skeleton: EAPI, variables required before inherit,
-   inherit order, source handling, package metadata, dependency classes, and
-   only the necessary phase overrides.
+   inherit order, source handling, package metadata, dependency classes,
+   Gentoo helper idioms, and only the necessary phase overrides.
 4. Preserve the eclass phase chain when overriding an exported phase. Call the
    eclass helper at the documented point and keep package-specific work next
    to it.
@@ -63,6 +66,9 @@ target source.
 
 - Prefer eclass-owned variables, phases, and pseudo-phases over hand-written
   equivalents.
+- Prefer Portage/eclass installation and phase helpers over raw `cp`, `chmod`,
+  `mkdir`, `./configure`, or `make`; see `shell-idioms.md` for the intent-to-
+  helper mapping and justified raw-shell exceptions.
 - Set variables marked pre-inherit before `inherit`; inspect the eclass when
   the ordering is not obvious.
 - Keep custom phases minimal and use conventional helper names such as
@@ -88,4 +94,3 @@ Exception tested: <condition that would change the default>
 Evidence: <target package, eclass contract, current examples>
 Uncertainty: <what still needs confirmation>
 ```
-

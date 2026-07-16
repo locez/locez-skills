@@ -30,9 +30,10 @@ Do not force persistent artifact files for ordinary ebuild work. The outcome can
 Parallelize only read-only discovery such as `rg`, `sed`, `ls`, package history reads, and upstream/eclass evidence checks. Serialize all file edits, mechanical lint/fix scripts, `pkgdev manifest`, QA reruns that depend on edits, commits, pushes, and PR creation.
 
 During evidence gathering, infer the package profile before drafting code. Read
-`semantic-generation.md` and `domain-routing.md`, then the matching domain
-reference. The semantic barrier must settle the normal eclass, phase/helper
-skeleton, direct dependency split, and any exception before package edits.
+`semantic-generation.md`, `domain-routing.md`, and `shell-idioms.md`, then the
+matching domain reference. The semantic barrier must settle the normal eclass,
+phase/helper skeleton, Gentoo shell idioms, direct dependency split, and any
+exception before package edits.
 
 ## Repository Policy Boundary
 

@@ -18,6 +18,35 @@ system as the primary signal. Do not reduce the package to
 Gradle eclass when the current tree has no applicable eclass. Inspect current
 Java package precedent and make the build offline and reproducible.
 
+The current tree has no universal Gradle/Maven phase eclass. The fallback
+generation shape is therefore `java-pkg-2` for Java setup and package-specific
+phases for the verified upstream command:
+
+```bash
+inherit java-pkg-2
+
+src_compile() {
+	# Use the exact upstream target with its offline mode and Gentoo-provided
+	# dependency/classpath setup, after verifying that it cannot fetch.
+	<verified-upstream-build-command>
+}
+
+src_install() {
+	java-pkg_dojar path/to/artifact.jar
+	# Use java-pkg_dowar or java-pkg_dolauncher when the artifact requires it.
+}
+```
+
+The angle-bracket text is a generation placeholder, not an ebuild command:
+replace it with an evidenced command and explicit failure handling. A Gradle
+or Maven wrapper that downloads a distribution or dependencies is not an
+offline strategy. Prefer packaged Java dependencies, declared build
+dependencies, and a verified local artifact path; if that cannot be made
+reproducible, keep the decision unknown instead of silently using a networked
+build. For Ant, prefer the `eant` helper and its documented dependency
+variables. Keep tests on the same offline classpath and install the artifact
+with Java helpers rather than raw image-tree copying.
+
 ## Perl
 
 Use `perl-module` for a Perl module distribution whose source uses a Perl
@@ -37,4 +66,3 @@ Preserve the eclass phase chain when adding patches, native code, resources,
 or test setup. Keep test dependencies under `test? ( ... )` when repository
 policy and eclass behavior permit it. A test restriction needs a concrete
 upstream or environment reason, not just an unverified failing test.
-

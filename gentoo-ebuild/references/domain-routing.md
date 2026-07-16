@@ -5,7 +5,7 @@ route to inspect an eclass contract, not a replacement for that inspection.
 
 | Source or behavior signal | Default route | Do not infer from this alone |
 | --- | --- | --- |
-| `pyproject.toml`, Python distribution metadata, Python modules/extensions | `python.md` | `python-any-r1` versus `python-single-r1` versus `python-r1` |
+| `pyproject.toml` `[build-system]`, Python distribution metadata, Python modules/extensions | `python.md` | backend substitution or `python-any-r1` versus `python-single-r1` versus `python-r1` |
 | `CMakeLists.txt` and CMake install/configure behavior | `native-builds.md` | `systemd`, `udev`, or multilib integration |
 | `meson.build` and Meson options | `native-builds.md` | a custom configure phase |
 | `configure.ac`, `configure.in`, `Makefile.am`, or autoreconf need | `native-builds.md` | whether autoreconf is required for every release |
@@ -17,6 +17,7 @@ route to inspect an eclass contract, not a replacement for that inspection.
 | `9999` version or explicit git snapshot | `package-modes.md` | using git source logic in a release ebuild |
 | `-bin` name or vendor archive with executables/libraries | `package-modes.md` | architecture, RPATH, and redistribution assumptions |
 | installed systemd units or udev rules | `package-modes.md` | inheriting the integration eclass only for its name |
+| Qt/GTK/GNOME/KDE libraries, `.desktop` files, icons, MIME or GSettings data | `gui-desktop.md` | toolkit eclass, XDG hooks, and GUI test display are separate decisions |
 
 ## Selection Rules
 
@@ -33,3 +34,7 @@ route to inspect an eclass contract, not a replacement for that inspection.
 5. When a source signal is missing or contradictory, keep the choice unknown
    and continue evidence gathering instead of selecting by frequency.
 
+For GUI packages, identify the toolkit/framework and primary build system
+separately. A Qt or GTK application normally keeps `cmake` or `meson` as the
+build owner; `desktop`, `xdg`, `virtualx`, `ecm`, and `qt*-build` are selected
+only when their narrower contracts match.

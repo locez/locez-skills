@@ -75,5 +75,8 @@ Eclass decision:
   behavior.
 - Add a helper/integration eclass only when a concrete function, variable,
   installed file, or package contract requires it.
+- Prefer the eclass/Portage helper for the generated operation (`doins`,
+  `fperms`, `eapply`, `econf`, `emake`, `tc-get*`, or an integration helper)
+  before writing an equivalent raw shell command.
 - Validate the generated result with native tools after the semantic choice;
   `pkgcheck` can expose a bad skeleton but does not choose the correct one.

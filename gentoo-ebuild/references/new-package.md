@@ -20,7 +20,7 @@ If any item is missing, try to discover it before asking the user. Do not rely o
 1. Read repository policy and package layout rules.
 2. Search for existing package names, forks, renamed projects, and same upstream in the overlay and main Gentoo tree.
 3. Search for similar ebuilds in the same language/build system.
-4. Infer the package profile and read `references/domain-routing.md` plus the matching domain reference.
+4. Infer the package profile and read `references/domain-routing.md`, `references/shell-idioms.md`, plus the matching domain reference.
 5. Run eclass discovery and write a short eclass decision record with the generated skeleton and exception trigger.
 6. Draft `category/package/package-version.ebuild` using existing package style.
 7. Audit dependencies before treating the draft as ready.
@@ -31,7 +31,9 @@ If any item is missing, try to discover it before asking the user. Do not rely o
 12. Generate `Manifest` with `pkgdev manifest`.
 13. Run package-level QA, then commit-level QA if preparing a PR.
 
-Read-only searches in steps 2-4 can run in parallel. Drafting files, Manifest generation, and QA reruns stay serial.
+Read-only searches in steps 2-3 can run in parallel. Step 4 consumes that
+evidence and settles the package profile before drafting. Drafting files,
+Manifest generation, and QA reruns stay serial.
 
 ## Ebuild Drafting Checks
 

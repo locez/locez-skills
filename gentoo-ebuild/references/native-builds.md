@@ -60,4 +60,3 @@ requires a documented preparation step.
 - Treat `flag-o-matic`, `toolchain-funcs`, and similar helpers as conditional
   support. Inherit them when their functions or variables are needed, not
   because they are common in the tree.
-
