@@ -17,8 +17,9 @@ Do not force persistent artifact files for ordinary ebuild work. The outcome can
 | Stage | Type | Outcome | Barrier Before |
 | --- | --- | --- | --- |
 | Policy and scope | serial | target repo rules, package set, PR scope | evidence gathering |
-| Evidence gathering | parallelizable | package history, similar ebuilds, upstream facts, eclass facts | decisions |
-| Maintainer decisions | barrier | eclass, license, redistribution, keywords, patch strategy, PR boundaries | edits |
+| Evidence gathering | parallelizable | package history, package profile, similar ebuilds, upstream facts, eclass facts | decisions |
+| Semantic package decision | barrier | default eclass, generated skeleton, dependency classes, exceptions | edits |
+| Maintainer decisions | barrier | license, redistribution, keywords, patch strategy, PR boundaries | edits |
 | Package edit | serial | ebuild, metadata, files, patches | Manifest |
 | Mechanical lint/fix | serial | current Gentoo copyright year in edited ebuild/eclass files | Manifest |
 | Manifest | serial | updated `Manifest` when distfiles change | QA |
@@ -27,6 +28,11 @@ Do not force persistent artifact files for ordinary ebuild work. The outcome can
 | Commit/PR prep | barrier | final diff, test evidence, residual risk | final report |
 
 Parallelize only read-only discovery such as `rg`, `sed`, `ls`, package history reads, and upstream/eclass evidence checks. Serialize all file edits, mechanical lint/fix scripts, `pkgdev manifest`, QA reruns that depend on edits, commits, pushes, and PR creation.
+
+During evidence gathering, infer the package profile before drafting code. Read
+`semantic-generation.md` and `domain-routing.md`, then the matching domain
+reference. The semantic barrier must settle the normal eclass, phase/helper
+skeleton, direct dependency split, and any exception before package edits.
 
 ## Repository Policy Boundary
 
@@ -39,6 +45,7 @@ Generic Gentoo guidance belongs in this skill. Overlay-specific policy belongs i
 - Scripts are only justified when native tools cannot express a repeated, deterministic, low-judgment operation. Keep them narrow lint/fix helpers, not workflow drivers.
 - Use the bundled `scripts/ensure_copyright_year.py --fix` on edited `.ebuild` and `.eclass` files before Manifest/QA unless repository policy says otherwise.
 - Human or maintainer judgment is required for eclass choice, license ambiguity, redistribution, dependency interpretation, patch strategy, keyword claims, version removal, and PR scope.
+- Scripts do not make eclass, dependency, phase, test, or QA-exception decisions. They may only perform a narrow deterministic check or repair after the semantic draft.
 
 ## Review Gates
 

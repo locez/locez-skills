@@ -2,7 +2,11 @@
 
 ## Goal
 
-Choose eclasses by evidence, not by memory. For non-obvious cases, produce a short decision record with candidates, evidence, choice, rejected alternatives, and remaining uncertainty. The record can live in working notes or the final report; do not create a persistent file unless useful.
+Choose eclasses by evidence, not by memory or frequency. The eclass decision is
+also a code-generation decision: identify which lifecycle behavior the eclass
+owns, then state the standard variables and phase helpers that the generated
+ebuild should use. For non-obvious cases, produce a short decision record in
+working notes or the final report; do not create a package database.
 
 ## Local First
 
@@ -44,6 +48,7 @@ For network lookups, prefer official Gentoo sources and current upstream documen
 - Use an eclass when it owns real package behavior: build system phases, language dependency handling, desktop integration, font installation, init/service helpers, kernel modules, Python implementation handling, cargo/go module handling.
 - Do not inherit an eclass just for one helper when simple phase code is clearer and established local precedent agrees.
 - Prefer modern eclasses used by current Gentoo packages over old compatibility eclasses.
+- Treat the build model and installed behavior as stronger signals than the language name. `java-pkg-simple` is for its simple-source model, `perl-module` is for Perl-specific module build systems, and `systemd`/`udev` are for their installed integration behavior.
 - Compare live ebuilds and release ebuilds separately; `9999` ebuilds often need different source handling.
 - If two eclasses overlap, read both eclasses and existing packages using both before combining them.
 - If package precedent and official eclass docs conflict, state the conflict and prefer the safer local package pattern unless it is clearly obsolete.
@@ -51,11 +56,24 @@ For network lookups, prefer official Gentoo sources and current upstream documen
 ## Decision Record Template
 
 ```text
+Package profile: <operation>; <artifact>; <ecosystem/build>; <runtime role>
 Eclass decision:
-- Package/build system:
-- Candidates:
-- Evidence:
-- Chosen:
-- Rejected:
+- Candidates and contract evidence:
+- Chosen eclass:
+- Generated skeleton: <pre-inherit variables>; <inherit order>; <phase helpers>
+- Rejected alternatives and why:
+- Exception trigger:
 - Remaining uncertainty:
 ```
+
+## Skeleton Rules
+
+- Read `@PRE_INHERIT` variables and set them before `inherit`.
+- Use the eclass's exported phases and pseudo-phases as the starting skeleton.
+- When overriding a phase, call the eclass helper at the documented point;
+  do not silently replace dependency setup, source preparation, or install
+  behavior.
+- Add a helper/integration eclass only when a concrete function, variable,
+  installed file, or package contract requires it.
+- Validate the generated result with native tools after the semantic choice;
+  `pkgcheck` can expose a bad skeleton but does not choose the correct one.

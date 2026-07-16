@@ -15,6 +15,7 @@
 4. Check whether patches, files, services, wrappers, or desktop assets still apply.
 5. Decide whether to copy the old ebuild, use `pkgdev bump` if available, or rewrite around newer eclass practice.
 6. If the build system, language ecosystem, source layout, or helper behavior changed, run eclass discovery before editing.
+7. Re-infer the package profile when the release changes build metadata, source mode, installed service/desktop paths, Python backend, module graph, or ABI behavior.
 
 ## Version And Input Checks
 
@@ -34,6 +35,7 @@
 - Keep old versions in place while validating the new ebuild.
 - Preserve old revisions if they are still needed for compatibility.
 - Keep live `9999` ebuild behavior separate from release ebuild behavior.
+- When the profile is unchanged, copy the old ebuild as a starting point; when it changes, regenerate the affected eclass/phase skeleton instead of carrying old behavior by inertia.
 
 ## Package Type Focus
 

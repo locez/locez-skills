@@ -7,6 +7,7 @@ Classify the issue:
 - Metadata: invalid `metadata.xml`, missing remote-id, maintainer problems.
 - Manifest/distfiles: checksum, stale files, mirror restrictions.
 - Ebuild style: EAPI, variable ordering, quoting, phases, obsolete eclasses.
+- Semantic skeleton: wrong eclass for the detected build model, missing eclass helper call, copied live/release behavior, or integration eclass without matching installed files.
 - Dependency: missing, invalid USE deps, circular, wrong `BDEPEND`/`RDEPEND`.
 - Runtime/install: wrong paths, missing files, QA prestripped/bundled libs, desktop/icon/cache handling.
 - Keywording: unsupported stable keywords, untested arches.
@@ -35,6 +36,7 @@ Before running broader QA on an edited ebuild, scan for the easy mechanical fail
 - `KEYWORDS` follows repository policy; do not introduce stable keywords when the overlay expects unstable keywords only.
 - `DEPEND`, `RDEPEND`, and `BDEPEND` reflect the build/runtime split instead of copying old dependencies blindly.
 - `RESTRICT` and QA exceptions are justified by package behavior, not added only to silence checks.
+- The eclass and phase shape was checked against the package profile before treating a QA warning as a purely mechanical issue.
 
 ## Loop Protocol
 
@@ -48,6 +50,7 @@ Before running broader QA on an edited ebuild, scan for the easy mechanical fail
 ## Fixing Rules
 
 - Fix root causes, not only warnings.
+- If a finding points to a wrong eclass or phase skeleton, return to semantic generation and re-check the eclass contract before patching around the warning.
 - Do not silence QA unless the package type genuinely requires it.
 - If adding QA exceptions, explain why they are correct for this package.
 - Re-run the command that exposed the problem after each fix.
