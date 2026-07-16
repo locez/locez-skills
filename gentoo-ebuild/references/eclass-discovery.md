@@ -19,7 +19,7 @@ working notes or the final report; do not create a package database.
    - Same binary/source packaging style.
    - Same desktop integration, service manager, font, kernel, Python, Rust, Go, Qt, CMake, Meson, npm, or Electron pattern.
 3. Inspect candidate eclasses directly under `eclass/*.eclass`.
-4. Read comments, variables, and exported functions before relying on phase behavior.
+4. Read comments, variables, supported EAPIs, and exported functions before relying on phase behavior or helper names.
 
 ## Commands
 
@@ -48,6 +48,11 @@ For network lookups, prefer official Gentoo sources and current upstream documen
 - Use an eclass when it owns real package behavior: build system phases, language dependency handling, desktop integration, font installation, init/service helpers, kernel modules, Python implementation handling, cargo/go module handling.
 - Do not inherit an eclass just for one helper when simple phase code is clearer and established local precedent agrees.
 - Prefer modern eclasses used by current Gentoo packages over old compatibility eclasses.
+- Treat helper names as scoped symbols, not global commands. Verify the
+  defining eclass, `@SUPPORTED_EAPIS`, and the selected inherit order before
+  generating a call. A helper found in an eclass source or old package is not
+  available to an ebuild unless that eclass is inherited directly or provides
+  it through a verified contract.
 - Treat the build model and installed behavior as stronger signals than the language name. `java-pkg-simple` is for its simple-source model, `perl-module` is for Perl-specific module build systems, and `systemd`/`udev` are for their installed integration behavior.
 - Compare live ebuilds and release ebuilds separately; `9999` ebuilds often need different source handling.
 - If two eclasses overlap, read both eclasses and existing packages using both before combining them.

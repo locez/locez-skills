@@ -128,6 +128,31 @@ and `tc-get*` as appropriate. Raw `cp`, image-tree `mkdir`, `chmod`,
 source/eclass reason. Required commands must fail with `die`; failures must
 not be hidden with `|| true`.
 
+### Helper availability and ownership
+
+Input profile: an EAPI 8 desktop application uses CMake, ships an upstream
+desktop file and icon, needs XDG cache updates, and has a plain canonical
+`LICENSE` file in its source archive. The pressure is to treat every familiar
+command in a helper table as a Portage builtin, use `qt_use` for Qt feature
+arguments, and invent `dolicense` for the license file.
+
+The expected result must classify helper provenance before generating code:
+`dodoc` is a Portage helper; `doicon`, `newicon`, `domenu`, and
+`make_desktop_entry` require the `desktop` eclass; XDG lifecycle calls require
+the relevant `xdg`/`xdg-utils` contract; and service or hardware helpers
+require their named eclass. `qt_use` is not a generic Qt application helper:
+the current tree defines it only in the dead, `dev-qt`-only `qt5-build` eclass,
+not in `qt6-build`. `dolicense` must not be generated; the plain canonical
+license text is not automatically installed, while `LICENSE=` remains
+metadata. If the profile instead says that the file maps bundled components to
+licenses or carries third-party notices/special terms for installed content,
+the agent may install the relevant text with `dodoc` or `DOCS`.
+
+The agent must verify helper definitions and supported EAPIs from the current
+Portage/eclass sources before using a helper. A name being common in an old
+ebuild or appearing in a reference table is not evidence that it is available
+in the selected inherit set.
+
 ### Portage eclass dependency accumulation
 
 Input profile: an eclass sets dependency variables during `inherit`, while

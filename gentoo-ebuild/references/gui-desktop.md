@@ -30,17 +30,31 @@ Inspect:
 | GNOME/Gtk package with the legacy GNOME eclass model | Use `gnome2` when its exported phases and source conventions match | A GTK dependency alone does not justify `gnome2`; modern Meson packages may use `meson` plus narrower GNOME helpers |
 | GSettings/GConf schemas or GNOME icon/cache updates without the legacy `gnome2` phase model | Use `gnome2-utils` helpers such as `gnome2_schemas_savelist`/`gnome2_schemas_update` when their installed files require them | `gnome2-utils` is helper-only; it does not replace the primary build eclass or justify `gnome2` |
 | valid upstream `.desktop`/icon/MIME files | Install or minimally patch the upstream files, then use `xdg` for lifecycle updates when required | Do not generate a duplicate desktop file with `make_desktop_entry` |
-| no usable upstream desktop file | Use `desktop` and `make_desktop_entry`, with `doicon`/`newicon` for icons; usually pair with `xdg` when installed desktop/icon/MIME data needs cache updates | Generate only from the installed command, app ID, icon path, categories, and actual optional features |
+| no usable upstream desktop file | Inherit `desktop` and use `make_desktop_entry`, with `doicon`/`newicon` for icons; usually pair with `xdg` when installed desktop/icon/MIME data needs cache updates | Generate only from the installed command, app ID, icon path, categories, and actual optional features |
 | tests require an X display | Use `virtualx` with `VIRTUALX_REQUIRED=test` or the package's existing conditional | A GUI package does not imply a display dependency for all builds or tests |
 
-`xdg.eclass` owns package preinst/postinst/postrm handling for installed
-desktop, icon, and MIME files. If a package overrides those phases, preserve
-the `xdg_*` helper calls or the corresponding eclass phase chain. Use
-`xdg-utils` directly only when its helper-only contract is what the package
-needs. `desktop` generates entries and installs icons; it does not replace the
-toolkit or build eclass. The two are often paired when the ebuild generates a
-desktop entry, but verify the package's actual installed metadata and current
-precedent.
+`desktop.eclass` provides `doicon`, `newicon`, `domenu`, and
+`make_desktop_entry`; these are not Portage-global commands. The current
+`desktop` eclass supports EAPI 7, 8, and 9, with an option-style
+`make_desktop_entry` contract in EAPI 9. `xdg.eclass` owns package
+preinst/postinst/postrm handling for installed desktop, icon, and MIME files.
+If a package overrides those phases, preserve the `xdg_*` helper calls or the
+corresponding eclass phase chain. Use `xdg-utils` directly only when its
+helper-only contract is what the package needs. `desktop` generates entries
+and installs icons; it does not replace the toolkit or build eclass. The two
+are often paired when the ebuild generates a desktop entry, but verify the
+package's actual installed metadata and current precedent.
+
+The current `qt5-build.eclass` is marked `@DEAD` and is restricted to `dev-qt`
+split ebuilds; `qt6-build.eclass` is also a Qt split-package eclass and does
+not provide the `qt_use` helper. Do not use `qt_use` for an ordinary Qt5 or Qt6
+application. Select the application's primary build eclass and its actual
+feature translator instead.
+
+The GUI-related eclasses have separate EAPI boundaries: current `xdg`,
+`xdg-utils`, `virtualx`, `gnome2`, and `gnome2-utils` support EAPI 7 and 8,
+while `desktop` also supports EAPI 9. Verify the eclass header when the target
+ebuild uses a different EAPI.
 
 ## Generated Shape
 

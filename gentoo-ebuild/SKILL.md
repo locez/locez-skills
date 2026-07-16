@@ -23,6 +23,16 @@ Use this as the entry point for Gentoo package maintenance. Classify the task, l
 - Prefer existing package style and nearby precedent over generic templates.
 - Treat ebuild editing as semantic code generation: infer source/build/runtime signals, select the normal eclass contract, generate its standard phase shape, and explain only evidenced deviations.
 - Prefer Portage/eclass helpers for install, permissions, patches, toolchain, version, and phase operations; use raw shell primitives only for source-specific exceptions.
+- Treat upstream `LICENSE`/`COPYING` files as a content decision, not automatic
+  install inputs: set `LICENSE=` from the licenses that apply to installed or
+  used content, but ship the upstream text with `dodoc`/`DOCS` only when it
+  explains component-to-license mapping, third-party attribution/notices,
+  special terms, or other user-relevant information that metadata alone does
+  not provide.
+- Treat helper availability as part of the eclass contract: verify the
+  provider, inherited eclass, exported function, and supported EAPI before
+  generating a helper call. A familiar name in an old ebuild is not evidence
+  that it is a current global Portage helper.
 - Treat eclass dependencies as Portage accumulation, not ordinary Bash variable
   overwrites: `inherit` collects eclass assignments in `E_DEPEND`, `E_RDEPEND`,
   `E_BDEPEND`, and related channels before appending them to the final metadata.
