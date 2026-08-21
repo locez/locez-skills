@@ -1,0 +1,7 @@
+interface:
+  display_name: "Locez Open Paren"
+  short_description: "Locez mode: preserve voice, emotion, and facts"
+  default_prompt: "Use $locez-open-paren to keep my voice, emotion, and facts intact while removing AI-like polish."
+
+policy:
+  allow_implicit_invocation: false
